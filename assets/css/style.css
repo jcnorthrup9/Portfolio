@@ -1,0 +1,377 @@
+/* ---------- reset ---------- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #1a1a1a;
+  background: #f7f6f3;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+
+/* ---------- sidebar nav ---------- */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 220px;
+  height: 100vh;
+  padding: 2.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  border-right: 1px solid #e2e0da;
+  background: #f7f6f3;
+  z-index: 100;
+}
+.nav-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.nav-toggle { display: none; }
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  font-size: 0.85rem;
+}
+.nav-links a {
+  display: flex;
+  gap: 0.6rem;
+  color: #8a8579;
+  letter-spacing: 0.02em;
+  transition: color 0.15s ease;
+}
+.nav-index {
+  font-variant-numeric: tabular-nums;
+  color: #c3bfb4;
+}
+.nav-links a:hover,
+.nav-links a.active {
+  color: #1a1a1a;
+}
+.nav-links a.active .nav-index { color: #1a1a1a; }
+
+/* ---------- page shell ---------- */
+main {
+  margin-left: 220px;
+}
+
+/* ---------- landing page ---------- */
+.landing {
+  padding: 2.5rem 4rem 1.5rem;
+  max-width: 720px;
+}
+.landing h1 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 0.6rem;
+  line-height: 1.4;
+}
+.landing p {
+  color: #6b6659;
+  font-size: 0.9rem;
+}
+/* ---------- landing project grid ---------- */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-flow: dense;
+  gap: 2px;
+  background: #e2e0da;
+}
+.grid-tile {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: visible;
+  display: block;
+}
+.tile-image-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  display: block;
+}
+.tile-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.grid-tile:hover .tile-image-wrap img {
+  transform: scale(1.04);
+}
+.grid-label {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 0.85rem 1rem;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
+  color: #fff;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 1;
+}
+.grid-tile:hover .grid-label {
+  opacity: 1;
+}
+
+/* color swatch that slides out of a tile on hover, revealing title + date */
+.grid-swatch-slide {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  text-align: center;
+  padding: 1rem;
+  transform: scaleX(0);
+  transform-origin: left center;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.3s ease, opacity 0.2s ease;
+  z-index: 5;
+}
+.grid-tile:hover .grid-swatch-slide {
+  transform: scaleX(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+/* rightmost column: sliding right would run off the row, so slide down instead */
+.grid-tile:nth-child(3n) .grid-swatch-slide {
+  top: 100%;
+  left: 0;
+  transform: scaleY(0);
+  transform-origin: top center;
+}
+.grid-tile:nth-child(3n):hover .grid-swatch-slide {
+  transform: scaleY(1);
+}
+.swatch-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+.swatch-date {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+/* ---------- project pages ---------- */
+.project { display: block; will-change: opacity; }
+.project-hero { width: 100%; }
+.project-hero img { width: 100%; height: auto; }
+
+.project-intro {
+  max-width: 640px;
+  padding: 3.5rem 4rem 2rem;
+}
+.project-intro .eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a39d8f;
+  margin-bottom: 0.75rem;
+}
+.project-intro h1 {
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin-bottom: 1.25rem;
+}
+.project-intro p {
+  color: #4a463c;
+  font-size: 0.98rem;
+}
+.project-intro .placeholder-note {
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: #b5522f;
+  border: 1px dashed #e0b6a5;
+  background: #fdf3ee;
+  padding: 0.75rem 1rem;
+}
+
+.project-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  background: #e2e0da;
+}
+.project-gallery figure { flex: 1 1 480px; background: #f7f6f3; }
+.project-gallery figure.wide { flex-basis: 100%; }
+.project-gallery img { width: 100%; height: 100%; object-fit: cover; }
+
+.gallery-heading {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a39d8f;
+  padding: 2rem 4rem 0.75rem;
+  background: #f7f6f3;
+}
+
+.project-gallery.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.project-gallery.grid-3 figure {
+  aspect-ratio: 1 / 1;
+}
+.project-gallery.grid-3.natural figure {
+  aspect-ratio: auto;
+}
+.project-gallery.grid-3.natural img {
+  height: auto;
+  object-fit: initial;
+}
+
+/* ---------- explicit layout for the grid-studies drawing set ---------- */
+.gallery-drawings {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+}
+.gallery-drawings figure { aspect-ratio: auto; background: #f7f6f3; }
+.gallery-drawings img { width: 100%; height: auto; display: block; }
+/* elev1 (aspect 5186:3800) and elev2 (aspect 2600:3863) sit in their own grid, columns sized to the exact
+   inverse of each image's aspect ratio so both render at precisely the same height (ground lines align). */
+.elev-pair {
+  grid-column: 1 / 13;
+  display: grid;
+  grid-template-columns: 0.67305fr 1.36474fr;
+}
+.gallery-drawings .area-plan { grid-column: 1 / 13; }
+.gallery-drawings .area-sec1 { grid-column: 1 / 13; }
+.gallery-drawings .area-tet { grid-column: 1 / 4; }
+.gallery-drawings .area-fig1 { grid-column: 4 / 7; }
+.gallery-drawings .area-fig2 { grid-column: 7 / 10; }
+.gallery-drawings .area-fig3 { grid-column: 10 / 13; }
+.gallery-drawings .area-bent1 { grid-column: 1 / 13; }
+
+/* ---------- broken/creative grid for feature photo sets ---------- */
+.gallery-feature {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-flow: dense;
+  gap: 2px;
+  background: #e2e0da;
+}
+.gallery-feature figure { aspect-ratio: 1 / 1; background: #f7f6f3; }
+.gallery-feature img { width: 100%; height: 100%; object-fit: cover; }
+.gallery-feature figure:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+.gallery-feature figure:nth-child(8) { grid-column: span 4; aspect-ratio: auto; }
+.gallery-feature figure:nth-child(8) img { height: auto; object-fit: initial; }
+.gallery-feature figure:nth-child(4) { grid-column: span 2; aspect-ratio: 2 / 1; }
+.gallery-feature figure:nth-child(7) { grid-column: span 4; aspect-ratio: 3 / 1; }
+
+/* ---------- next-project teaser ---------- */
+.next-project {
+  position: relative;
+  display: block;
+  margin-top: 4px;
+}
+.next-project img { width: 100%; height: 70vh; object-fit: cover; filter: brightness(0.9); transition: filter 0.25s ease; }
+.next-project:hover img { filter: brightness(1); }
+.next-project .next-label {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 4rem;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.35);
+}
+.next-project .next-label .eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: 0.5rem;
+}
+.next-project .next-label h2 {
+  font-size: 1.8rem;
+  font-weight: 500;
+}
+
+/* ---------- mobile ---------- */
+@media (max-width: 760px) {
+  .nav {
+    position: sticky;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-right: none;
+    border-bottom: 1px solid #e2e0da;
+  }
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: none;
+    border: 1px solid #d8d5cc;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+  }
+  .nav-links {
+    position: fixed;
+    top: 57px;
+    left: 0;
+    right: 0;
+    background: #f7f6f3;
+    border-bottom: 1px solid #e2e0da;
+    padding: 1.25rem;
+    display: none;
+    gap: 1rem;
+  }
+  .nav-links.open { display: flex; }
+  main { margin-left: 0; }
+  .landing, .project-intro { padding: 2.5rem 1.5rem; }
+  .next-project .next-label { left: 1.5rem; bottom: 1.5rem; }
+  .project-grid { grid-template-columns: repeat(2, 1fr); }
+  /* 2-column layout: the right column is now the "edge" instead of the 3rd column */
+  .grid-tile:nth-child(3n) .grid-swatch-slide {
+    top: 0;
+    left: 100%;
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+  .grid-tile:nth-child(3n):hover .grid-swatch-slide {
+    transform: scaleX(1);
+  }
+  .grid-tile:nth-child(even) .grid-swatch-slide {
+    top: 100%;
+    left: 0;
+    transform: scaleY(0);
+    transform-origin: top center;
+  }
+  .grid-tile:nth-child(even):hover .grid-swatch-slide {
+    transform: scaleY(1);
+  }
+  .project-gallery.grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .gallery-heading { padding: 1.5rem 1.5rem 0.5rem; }
+  .gallery-feature { grid-template-columns: repeat(2, 1fr); }
+  .gallery-feature figure:nth-child(1) { grid-column: span 2; grid-row: span 1; aspect-ratio: 2 / 1; }
+  .gallery-feature figure:nth-child(4) { grid-column: span 2; }
+  .gallery-feature figure:nth-child(7) { grid-column: span 2; }
+  .gallery-feature figure:nth-child(8) { grid-column: span 2; }
+
+  .gallery-drawings {
+    grid-template-columns: 1fr;
+  }
+  .gallery-drawings figure { grid-column: 1 / -1; }
+  .elev-pair { grid-column: 1 / -1; grid-template-columns: 1fr; }
+}
