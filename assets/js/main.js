@@ -1,4 +1,5 @@
 const PROJECT_TITLES = {
+  "interface-architecture": "Interface Architecture",
   "measurement-grids": "Performing Arts Theater in Little Tokyo",
   "elevation-final-model": "Elevation Study — Final Model",
   "van-nuys-municipal": "A Municipal Building in Van Nuys",
@@ -6,10 +7,10 @@ const PROJECT_TITLES = {
   "casa-musica": "Casa Musica",
   "design-documents": "Design Documents",
   "advanced-project-delivery": "Advanced Project Delivery",
+  "details-details": "Details, Details",
   "prototype": "Prototype",
 };
 
-const loadedSlugs = new Set();
 let scrollSpyObserver;
 let frontierObserver;
 let currentUrlSlug;
@@ -65,9 +66,34 @@ function setActiveNavByProject(slug) {
   });
 }
 
+function ensureHeroTitleCard(hero) {
+  let card = hero.querySelector(".hero-title-card");
+  if (!card) {
+    const slug = hero.dataset.spyProject;
+    const title = PROJECT_TITLES[slug] || "";
+    const eyebrowEl = hero.parentElement && hero.parentElement.querySelector(".project-intro .eyebrow");
+    const eyebrow = eyebrowEl ? eyebrowEl.textContent : "";
+
+    card = document.createElement("div");
+    card.className = "hero-title-card";
+    card.innerHTML = `
+      ${eyebrow ? `<span class="hero-title-eyebrow">${eyebrow}</span>` : ""}
+      <span class="hero-title-main">${title}</span>
+    `;
+    hero.appendChild(card);
+  }
+  return card;
+}
+
+function flashHeroTitle(hero) {
+  const card = ensureHeroTitleCard(hero);
+  card.classList.remove("flash");
+  void card.offsetWidth; // force reflow so the animation restarts on repeat entries
+  card.classList.add("flash");
+}
+
 function initScrollSpy() {
   currentUrlSlug = document.body.dataset.project;
-  loadedSlugs.add(currentUrlSlug);
 
   scrollSpyObserver = new IntersectionObserver(
     (entries) => {
@@ -75,6 +101,10 @@ function initScrollSpy() {
         if (!entry.isIntersecting) return;
         const slug = entry.target.dataset.spyProject;
         setActiveNavByProject(slug);
+
+        if (entry.target.classList.contains("project-hero")) {
+          flashHeroTitle(entry.target);
+        }
 
         if (slug !== currentUrlSlug) {
           currentUrlSlug = slug;
@@ -100,9 +130,7 @@ function normalizeAnchorHref(anchor) {
 }
 
 function observeFrontier(anchor) {
-  const slug = anchor.dataset.spyProject;
   normalizeAnchorHref(anchor);
-  if (loadedSlugs.has(slug)) return; // closes the loop back to an already-shown project — leave as a plain clickable link
 
   if (frontierObserver) frontierObserver.disconnect();
   frontierObserver = new IntersectionObserver(
@@ -121,7 +149,6 @@ function observeFrontier(anchor) {
 
 async function appendNextProject(anchor) {
   const slug = anchor.dataset.spyProject;
-  if (loadedSlugs.has(slug)) return;
 
   const res = await fetch(urlForSlug(slug));
   const html = await res.text();
@@ -132,7 +159,6 @@ async function appendNextProject(anchor) {
   const nextAnchor = fetchedDoc.querySelector(".next-project");
 
   anchor.replaceWith(article);
-  loadedSlugs.add(slug);
   registerFadeArticle(article);
 
   const hero = article.querySelector(".project-hero");
