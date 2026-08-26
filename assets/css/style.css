@@ -70,6 +70,7 @@ main {
   font-weight: 500;
   margin-bottom: 0.6rem;
   line-height: 1.4;
+  white-space: nowrap;
 }
 .landing p {
   color: #6b6659;
@@ -174,6 +175,21 @@ main {
 .project-hero { width: 100%; }
 .project-hero img { width: 100%; height: auto; }
 
+/* letterboxed hero: for very wide/short source images that read as tightly
+   cropped when stretched edge-to-edge — inset with vertical breathing room instead */
+.project-hero.hero-letterboxed {
+  display: flex;
+  justify-content: center;
+  background: #e2e0da;
+  padding: 3rem 0;
+}
+.project-hero.hero-letterboxed img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 70vh;
+}
+
 .project-intro {
   max-width: 640px;
   padding: 3.5rem 4rem 2rem;
@@ -211,7 +227,24 @@ main {
 }
 .project-gallery figure { flex: 1 1 480px; background: #f7f6f3; }
 .project-gallery figure.wide { flex-basis: 100%; }
+.project-gallery figure.pair-large { flex: 1 1 calc(50% - 1px); }
 .project-gallery img { width: 100%; height: 100%; object-fit: cover; }
+
+.placeholder-figure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem;
+  min-height: 240px;
+  border: 1px dashed #e0b6a5;
+  background: #fdf3ee;
+  color: #b5522f;
+  font-size: 0.85rem;
+}
+
+.project-gallery.centered-solo { justify-content: center; }
+.project-gallery.centered-solo figure { flex: 0 1 360px; }
 
 .gallery-heading {
   font-size: 0.75rem;
@@ -304,6 +337,7 @@ main {
 
 /* ---------- mobile ---------- */
 @media (max-width: 760px) {
+  .project-gallery figure.pair-large { flex-basis: 100%; }
   .nav {
     position: sticky;
     width: 100%;
@@ -340,6 +374,7 @@ main {
   .nav-links.open { display: flex; }
   main { margin-left: 0; }
   .landing, .project-intro { padding: 2.5rem 1.5rem; }
+  .landing h1 { white-space: normal; }
   .next-project .next-label { left: 1.5rem; bottom: 1.5rem; }
   .project-grid { grid-template-columns: repeat(2, 1fr); }
   /* 2-column layout: the right column is now the "edge" instead of the 3rd column */

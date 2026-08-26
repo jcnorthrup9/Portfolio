@@ -16,11 +16,27 @@ let currentUrlSlug;
 const fadeArticles = [];
 let fadeRaf = null;
 
+// Absolute path to the site's own root, computed once from the real initial URL
+// (before any pushState can mutate it) — works whether the site is served from
+// the domain root or a subpath (e.g. GitHub Pages project sites like /Portfolio/).
+const SITE_ROOT = (() => {
+  const p = location.pathname;
+  return p.includes("/projects/") ? p.split("/projects/")[0] + "/" : p.substring(0, p.lastIndexOf("/") + 1);
+})();
+
+function urlForSlug(slug) {
+  return slug === "landing" ? `${SITE_ROOT}index.html` : `${SITE_ROOT}projects/${slug}/index.html`;
+}
+
 async function loadNav() {
-  const res = await fetch("/partials/nav.html");
+  const res = await fetch(`${SITE_ROOT}partials/nav.html`);
   const html = await res.text();
   const mount = document.getElementById("nav-mount");
   mount.innerHTML = html;
+
+  document.querySelectorAll(".nav-links a, .nav-name").forEach((a) => {
+    if (a.dataset.project) a.setAttribute("href", urlForSlug(a.dataset.project));
+  });
 
   const toggle = document.getElementById("nav-toggle");
   const links = document.getElementById("nav-links");
@@ -38,13 +54,13 @@ async function loadNav() {
 function setActiveNav() {
   const current = document.body.dataset.project;
   if (!current) return;
-  document.querySelectorAll(".nav-links a").forEach((a) => {
+  document.querySelectorAll(".nav-links a, .nav-name").forEach((a) => {
     a.classList.toggle("active", a.dataset.project === current);
   });
 }
 
 function setActiveNavByProject(slug) {
-  document.querySelectorAll(".nav-links a").forEach((a) => {
+  document.querySelectorAll(".nav-links a, .nav-name").forEach((a) => {
     a.classList.toggle("active", a.dataset.project === slug);
   });
 }
@@ -62,8 +78,8 @@ function initScrollSpy() {
 
         if (slug !== currentUrlSlug) {
           currentUrlSlug = slug;
-          history.pushState({ slug }, "", `/projects/${slug}/index.html`);
-          if (PROJECT_TITLES[slug]) document.title = `${PROJECT_TITLES[slug]} — John Northrup`;
+          history.pushState({ slug }, "", urlForSlug(slug));
+          document.title = slug === "landing" ? "John Northrup — Portfolio" : (PROJECT_TITLES[slug] ? `${PROJECT_TITLES[slug]} — John Northrup` : document.title);
         }
       });
     },
@@ -78,8 +94,14 @@ function initInfiniteScroll() {
   if (anchor) observeFrontier(anchor);
 }
 
+function normalizeAnchorHref(anchor) {
+  const slug = anchor.dataset.spyProject;
+  if (slug) anchor.setAttribute("href", urlForSlug(slug));
+}
+
 function observeFrontier(anchor) {
   const slug = anchor.dataset.spyProject;
+  normalizeAnchorHref(anchor);
   if (loadedSlugs.has(slug)) return; // closes the loop back to an already-shown project — leave as a plain clickable link
 
   if (frontierObserver) frontierObserver.disconnect();
@@ -101,8 +123,7 @@ async function appendNextProject(anchor) {
   const slug = anchor.dataset.spyProject;
   if (loadedSlugs.has(slug)) return;
 
-  const href = anchor.getAttribute("href");
-  const res = await fetch(href);
+  const res = await fetch(urlForSlug(slug));
   const html = await res.text();
   const fetchedDoc = new DOMParser().parseFromString(html, "text/html");
   const article = fetchedDoc.querySelector(".project");
@@ -147,7 +168,7 @@ function scheduleFadeUpdate() {
 
 function updateFades() {
   const vh = window.innerHeight;
-  const fadeZone = Math.min(vh * 0.85, 900);
+  const fadeZone = Math.min(vh * 0.3, 350);
 
   fadeArticles.forEach((article) => {
     const rect = article.getBoundingClientRect();
