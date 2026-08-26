@@ -1,0 +1,43 @@
+# Portfolio Milestones
+
+A running log of major progress on this site.
+
+## Scaffold & navigation mechanics (Aug 2026)
+
+- Built as a plain static HTML/CSS/JS site — no framework, no build step.
+- Design direction: minimalist, image-centric, modeled on anne-porter.com's secondary project pages, where the
+  visitor is never forced back to a landing/grid page to keep browsing.
+- Sidebar nav (`partials/nav.html`) injected on every page via `fetch()`, avoiding duplicated markup per page.
+- Continuous-scroll mechanic: scrolling to the bottom of one project fetches and appends the next project's content
+  in place, so the whole site reads as one uninterrupted scroll rather than page-by-page clicks.
+- Scrollspy (`IntersectionObserver`) drives active nav highlighting, the browser URL/title (via `history.pushState`),
+  and a scroll-linked cross-fade between projects.
+
+## Content build-out (Aug 2026)
+
+- Replaced placeholder/scaffold content across projects with real work: **Prototype** (AI-generated retail
+  architecture + product design pipeline), **Interface Architecture** (Cabinet of Curiosities installation, real
+  render/photo set plus burnt-wood object studies), **Performing Arts Theater in Little Tokyo** (formerly
+  "Measurement Grids" — real studio boards, drawings, and model photography), **Casa Musica**, and a proper split of
+  **Design Documents** vs. **Advanced Project Delivery** (the latter reflecting its actual Construction Documents
+  course content).
+- Cleaned up numerous images with baked-in gray/tan mat borders from source exports — content-aware cropping so
+  every image fills its frame with no visible background.
+- Landing page bio rewritten from placeholder copy; project grid tiles gained a hover-reveal color swatch showing
+  each project's title, term, and a dimmed preview grid of that project's own images.
+- Added a large centered title overlay that briefly flashes over each project's hero image as it scrolls into view,
+  so it's unambiguous when you've entered a new project.
+- Turned the project chain into a true infinite loop: scrolling past the last project loads back into the first
+  and repeats indefinitely, instead of stopping.
+- Valiant and Elf-O-Matic-3000 temporarily unlisted from nav/landing pending real content — pages still exist,
+  not deleted.
+
+## Hosting (Aug 2026)
+
+- Converted every absolute site path (`/assets/...`, `/projects/...`, the nav-loading `fetch()` call) to
+  relative paths plus a small JS-computed site-root constant, so the site works correctly whether served from a
+  domain root or a GitHub Pages project subpath.
+- Published to GitHub (`github.com/jcnorthrup9/Portfolio`) and connected the custom domain **jcnorthrup.com** via a
+  `CNAME` file and Cloudflare DNS (A records to GitHub Pages, DNS-only/unproxied to avoid interfering with GitHub's
+  domain verification and HTTPS provisioning).
+- Site is live at both the custom domain and the default GitHub Pages URL.
