@@ -258,7 +258,12 @@ main {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #a39d8f;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+.project-intro .advisor {
+  font-size: 0.72rem;
+  color: #b5b0a3;
+  margin-bottom: 1.1rem;
 }
 .project-intro h1 {
   font-size: 1.6rem;
