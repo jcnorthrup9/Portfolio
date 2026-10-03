@@ -48,7 +48,7 @@ img { display: block; }
 .cover h1 { font-size: 34pt; font-weight: 600; letter-spacing: -0.01em; margin: 0.12in 0 0.22in; }
 .cover .tagline { font-size: 13pt; font-weight: 500; line-height: 1.35; margin-bottom: 0.14in; }
 .cover .bio { font-size: 9.5pt; line-height: 1.55; color: #6b6659; }
-.cover .contact { margin-top: 0.35in; font-size: 9pt; font-weight: 500; border-top: 1px solid #e2e0da; padding-top: 0.12in; }
+.cover .contact { display: flex; justify-content: space-between; margin-top: 0.35in; font-size: 9pt; font-weight: 500; border-top: 1px solid #e2e0da; padding-top: 0.12in; }
 .mosaic { width: 5.6in; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.1in; align-content: center; }
 .mosaic .tile { aspect-ratio: 1; overflow: hidden; }
 .mosaic img { width: 100%; height: 100%; object-fit: cover; }

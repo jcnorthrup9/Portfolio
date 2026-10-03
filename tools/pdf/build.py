@@ -116,7 +116,7 @@ PROJECTS = [
             "mechanisms for clearing, filtering, compartmentalizing and synthesizing. Various influences were "
             "combined here, from the base studies of the 17th Century Fortress, Castillo San Marcos, the Faculdade "
             "de Arquitetura, Daniel Libeskind's micromegas. The contrasting components become a study of composed "
-            "disorganization, collage, and porousity.",
+            "disorganization, collage, and porosity.",
         ],
         "pages": [
             {"rows": [["detail-1.png", "detail-2.png"]]},
@@ -132,12 +132,12 @@ PROJECTS = [
         "text": [
             "This project for the Los Angeles Dance Project (LADP) seeks to bring the community of Pico-Union "
             "together on a campus that serves and connects the community. Located directly across from the "
-            "Pico-Union Project, the site was surgically opened up in order to connect via sitelines and circulation "
+            "Pico-Union Project, the site was surgically opened up in order to connect via sightlines and circulation "
             "to this important community asset. A unique goal among this project was to preserve many of the "
             "existing structures on the site and repurposing the materials from buildings that were to be removed. "
             "With a raised circulatory system, visitors are encouraged to meander throughout the site, engaging with "
             "it from within the in-between spaces. The roof serves as not only shade for warm summer days, but also "
-            "acts as an organizing device for the discreet elements of the site, bringing them together in a "
+            "acts as an organizing device for the discrete elements of the site, bringing them together in a "
             "collective, just as is intended with the surrounding community.",
         ],
         "pages": [
@@ -220,6 +220,7 @@ PROJECTS = [
     },
 ]
 
+EMAIL = "jcnorthrup@gmail.com"
 TAGLINE = "Designer specializing in the intersection of AI, automation, and architecture."
 BIO = ("I build custom generative pipelines using Python, Grasshopper, and ComfyUI to solve complex spatial "
        "problems — streamlining 3D workflows through data-driven procedural modeling and advanced digital "
@@ -296,7 +297,7 @@ def build_html():
     <h1>John Northrup</h1>
     <p class="tagline">{esc(TAGLINE)}</p>
     <p class="bio">{esc(BIO)}</p>
-    <div class="contact"><a href="https://jcnorthrup.com">jcnorthrup.com</a></div>
+    <div class="contact"><a href="mailto:{EMAIL}">{EMAIL}</a><a href="https://jcnorthrup.com">jcnorthrup.com</a></div>
   </div>
   <div class="mosaic">{mosaic}</div>
 </section>""")
