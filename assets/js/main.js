@@ -30,6 +30,12 @@ function urlForSlug(slug) {
 }
 
 async function loadNav() {
+  // Landing-page links are written relative to the site root; pin them now, because
+  // scrollspy's pushState later changes the URL they would otherwise resolve against.
+  document.querySelectorAll(".landing a[href], .project-grid a[href]").forEach((a) => {
+    a.setAttribute("href", SITE_ROOT + a.getAttribute("href"));
+  });
+
   const res = await fetch(`${SITE_ROOT}partials/nav.html`);
   const html = await res.text();
   const mount = document.getElementById("nav-mount");

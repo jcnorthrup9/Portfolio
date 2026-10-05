@@ -126,7 +126,7 @@ PROJECTS = [
     {
         "slug": "la-dance-shed",
         "title": "LA Dance Shed",
-        "eyebrow": "SP24, 2GA Studio, with Sledge Milan",
+        "eyebrow": "SP24, 2GA Studio, with Milan Sledge",
         "color": "#8D4920",
         "hero": "cover.png",
         "text": [
