@@ -76,6 +76,16 @@ main {
   color: #6b6659;
   font-size: 0.9rem;
 }
+.landing-pdf {
+  display: inline-block;
+  margin-top: 0.9rem;
+  font-size: 0.85rem;
+  color: #1a1a1a;
+  border-bottom: 1px solid #c3bfb4;
+  padding-bottom: 1px;
+  transition: border-color 0.15s ease;
+}
+.landing-pdf:hover { border-color: #1a1a1a; }
 /* ---------- landing project grid ---------- */
 .project-grid {
   display: grid;
