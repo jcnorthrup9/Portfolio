@@ -50,3 +50,11 @@ A running log of major progress on this site.
   PDF stays in sync with the site.
 - Landing page links to the PDF ("Download portfolio (PDF, 11 MB)") under the bio, served at
   jcnorthrup.com/John-Northrup-Portfolio.pdf.
+
+## Resume link (Oct 2026)
+
+- Added `John-Northrup-Resume.pdf` (one page, real selectable text) at jcnorthrup.com/John-Northrup-Resume.pdf.
+  Its source is the Processing sketch at `D:\OneDrive\Employment\Resume\resume\resume.pde`; re-export there and
+  copy the PDF in when the resume changes.
+- Landing page now shows two links under the bio: "Download portfolio ↓" (downloads) and "Resume ↗" (opens in a
+  new tab). Dropped the "(PDF, 11 MB)" note from the portfolio label.
