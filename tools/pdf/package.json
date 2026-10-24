@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "description": "Playwright for rendering the PDF portfolio (tools/pdf/render.js)",
+  "dependencies": {
+    "playwright": "1.61.1"
+  }
+}

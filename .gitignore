@@ -1,2 +1,4 @@
 content-staging/
 tools/pdf/build/
+tools/pdf/node_modules/
+tools/pdf/package-lock.json

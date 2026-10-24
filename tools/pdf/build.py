@@ -1,198 +1,253 @@
-"""Build a print-ready PDF portfolio from the site's content and images.
+"""Build print-ready PDF portfolios straight from the site, so they always match it.
 
 Usage (from the repo root):
-    pip install pillow            # one-time
-    python3 tools/pdf/build.py    # writes John-Northrup-Portfolio.pdf
+    pip install pillow                                # one-time
+    npm install --prefix tools/pdf                    # one-time: Playwright for HTML -> PDF
+    npx --prefix tools/pdf playwright install chromium
+    python tools/pdf/build.py                         # full portfolio + one PDF per sidebar group
 
-Requires Node with Playwright (Chromium) available for the final HTML -> PDF step.
-Page content lives in PROJECTS below; keep it in sync with projects/*/index.html.
+Nothing about the projects is written here. The sidebar (partials/nav.html) gives the groups, the project
+order and the display names; each project page gives its cover, details line, advisor or role, paragraphs,
+gallery images, gallery headings and captions; the landing page gives the cover-page intro. Edit the site and
+rebuild — or let the GitHub Action do it on every push to main.
+
+Outputs (repo root):
+    John-Northrup-Portfolio.pdf               everything, in sidebar order
+    John-Northrup-Portfolio-<group>.pdf       one per sidebar group (code, architecture, drawing, fabrication)
 """
+import argparse
 import html
 import os
+import re
 import shutil
 import subprocess
 import sys
+from html.parser import HTMLParser
 
 from PIL import Image
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-BUILD = os.path.join(ROOT, "tools", "pdf", "build")
-OUTPUT = os.path.join(ROOT, "John-Northrup-Portfolio.pdf")
+HERE = os.path.dirname(os.path.abspath(__file__))
+BUILD = os.path.join(HERE, "build")
+SITE = "jcnorthrup.com"
+EMAIL = "jcnorthrup@gmail.com"
 
-BG = (247, 246, 243)          # site background #f7f6f3
-MAX_PX = 1800                 # longest side of exported images (~180dpi across a 10in page)
+BG = (255, 255, 255)          # site background
+MAX_PX = 1400                 # longest side of exported images (~140 dpi across a 10 in page)
+JPEG_Q = 76
 
 # Page geometry, inches. US Letter landscape.
 PAGE_W, PAGE_H = 11.0, 8.5
-MARGIN_X, MARGIN_TOP, MARGIN_BOTTOM = 0.5, 0.75, 0.75
+MARGIN_X, MARGIN_TOP, MARGIN_BOTTOM = 0.55, 0.75, 0.7
 CONTENT_W = PAGE_W - 2 * MARGIN_X
 CONTENT_H = PAGE_H - MARGIN_TOP - MARGIN_BOTTOM
-GAP = 0.18
-
-PROJECTS = [
-    {
-        "slug": "prototype",
-        "title": "Prototype",
-        "eyebrow": "SP26, Prototype, 3GB Studio",
-        "color": "#C2A480",
-        "hero": "cover.jpg",
-        "text": [
-            "A generative pipeline for retail architecture and product design, built around a footwear brand's "
-            "flagship storefront. Architectural iterations were produced through a custom Flux/ComfyUI pipeline, "
-            "while the product line — a technical boot shown here in cutaway and colorway studies — was developed "
-            "in parallel through a Gemini-based image pipeline. The two threads feed each other: the building's "
-            "industrial material palette of raw wood, steel, and concrete is carried directly into the product's "
-            "own construction and display.",
-        ],
-        "pages": [
-            {"rows": [["section-elevation.jpg"], ["interior-1.jpg", "interior-2.jpg"]]},
-            {"rows": [["product-1.jpg", "product-colorways.jpg", "product-technical.jpg"]]},
-        ],
-    },
-    {
-        "slug": "interface-architecture",
-        "title": "Interface Architecture",
-        "eyebrow": "3GA Studio",
-        "advisor": "Casey Rehm",
-        "color": "#984C16",
-        "hero": "room-1.jpg",
-        "text": [
-            "A Cabinet of Curiosities that produces memory artifacts. The installation receives audio input from "
-            "the surrounding space; language becomes image through translation of an LLM to 3D object creation "
-            "via API calls (Meshy). Objects are automatically optimized for 3D printing — oriented, scaled, and "
-            "combined through a Python pipeline.",
-        ],
-        "pages": [
-            {"rows": [["room-2.jpg", "room-3.jpg", "room-4.jpg"], ["cover.png", "detail-2.png"]]},
-            {"rows": [["detail-1.png", "detail-3.png", "detail-4.png"]]},
-            {"heading": "Object Studies", "rows": [
-                ["object-study-1.jpg", "object-study-2.jpg", "object-study-3.jpg"],
-                ["object-study-4.jpg", "object-study-5.jpg", "object-study-6.jpg"],
-            ]},
-        ],
-    },
-    {
-        "slug": "measurement-grids",
-        "title": "Little Tokyo Theater",
-        "eyebrow": "FA23, DS 1100, 1GA Studio",
-        "advisor": "Matthew Au",
-        "color": "#90C5CB",
-        "hero": "big-blue-drawing.png",
-        "text": [
-            "This first semester studio project stems from a study of grid systems, materiality, galleries, and "
-            "theatres. The initial measurement grids were carefully constructed, using the limitations of the tape "
-            "itself and the gap in named measurements vs. actual measurements. The grids operate in a way that looks "
-            "at material falsities, as well as transparency. Through these measurement systems, they are then "
-            "expanded into large boards. These boards are then used to produce a massing model. Ultimately realized "
-            "as a performing arts theater in the Little Tokyo District, the Measurement Grid is transformed into a "
-            "space that offers a place for community to gather in an unconventional theater setting where actors "
-            "and patrons are active participants in the shows on display.",
-        ],
-        "pages": [
-            {"heading": "Grid Studies", "rows": [
-                ["grid-diagram.png", "figure-1.png", "figure-2.png", "figure-3.png"],
-                ["bent-board-1.png", "elevation-2.png", "elevation-1.png"],
-            ]},
-            {"heading": "Grid Studies", "rows": [["section-1.png", "plan.png"]]},
-            {"heading": "Final Model", "rows": [["final-model-1.jpg", "final-model-2.jpg"],
-                                                ["final-model-3.jpg", "final-model-5.jpg", "final-model-4.jpg"]]},
-            {"heading": "Final Model", "rows": [["final-model-6.jpg", "final-model-7.jpg"]]},
-            {"heading": "Final Model", "rows": [["final-model-drawing.jpg"]]},
-        ],
-    },
-    # A Municipal Building in Van Nuys unlisted Oct 2026; its page remains at projects/van-nuys-municipal/.
-    {
-        "slug": "la-dance-shed",
-        "title": "LA Dance Shed",
-        "eyebrow": "FA24, 2GA Studio, with Milan Sledge",
-        "color": "#8D4920",
-        "hero": "cover.png",
-        "text": [
-            "This project for the Los Angeles Dance Project (LADP) seeks to bring the community of Pico-Union "
-            "together on a campus that serves and connects the community. Located directly across from the "
-            "Pico-Union Project, the site was surgically opened up in order to connect via sightlines and circulation "
-            "to this important community asset. A unique goal among this project was to preserve many of the "
-            "existing structures on the site and repurposing the materials from buildings that were to be removed. "
-            "With a raised circulatory system, visitors are encouraged to meander throughout the site, engaging with "
-            "it from within the in-between spaces. The roof serves as not only shade for warm summer days, but also "
-            "acts as an organizing device for the discrete elements of the site, bringing them together in a "
-            "collective, just as is intended with the surrounding community.",
-        ],
-        "pages": [
-            {"rows": [["detail-1.png", "detail-2.png"], ["detail-3.png", "detail-4.png"]]},
-        ],
-    },
-    # Casa Musica unlisted Oct 2026 (cut to the strongest work); its page remains at projects/casa-musica/.
-    {
-        "slug": "design-documents",
-        "title": "Design Documents",
-        "eyebrow": "SP25, Design Documents",
-        "advisor": "Herwig Baumgartner",
-        "color": "#7D5F30",
-        "hero": "cover.png",
-        "text": [
-            "This course studies the implementation of design, technology, and an understanding of building "
-            "systems. Students are tasked with preparing Design Document drawings from a previous year's studio "
-            "project and are asked to bring it to life with real-world materials, budgets, and environmental factors.",
-        ],
-        "pages": [
-            {"rows": [["detail-1.png", "detail-2.png"]]},
-            {"rows": [["detail-3.png", "detail-4.png"]]},
-        ],
-    },
-    {
-        "slug": "advanced-project-delivery",
-        "title": "Advanced Project Delivery",
-        "eyebrow": "SP25, Advanced Project Delivery",
-        "advisor": "Pavel Getov and Karenza Harris",
-        "color": "#3F536E",
-        "hero": "cover.png",
-        "text": [
-            "A Construction Documents course focused on taking a design through to buildable detail — resolving "
-            "material assemblies, structural connections, and building systems into a coordinated drawing set. Site "
-            "plans, reflected ceiling plans, and wall section sheets were developed to real-world standards of "
-            "dimension, specification, and constructability.",
-        ],
-        "pages": [
-            {"rows": [["detail-1.png", "detail-2.png"]]},
-            {"rows": [["detail-3.png"]]},
-        ],
-    },
-    {
-        "slug": "details-details",
-        "title": "Details, Details",
-        "eyebrow": "F25, Details, Details",
-        "advisor": "Dwayne Oyler",
-        "color": "#906041",
-        "hero": "cover.png",
-        "text": [
-            "A doorlock mechanism inspired by Frank Lloyd Wright's detail work, specifically the door mechanisms in "
-            "the Hollyhock House.",
-        ],
-        "note": "All work made with partners Chia-Chen Li and Baizhen Yu",
-        "pages": [
-            {"rows": [["detail-1.png", "detail-2.png"]]},
-            {"rows": [["detail-3.png"]]},
-        ],
-    },
-]
-
-EMAIL = "jcnorthrup@gmail.com"
-TAGLINE = "Designer specializing in the intersection of AI, automation, and architecture."
-BIO = ("I build custom generative pipelines using Python, Grasshopper, and ComfyUI to solve complex spatial "
-       "problems — streamlining 3D workflows through data-driven procedural modeling and advanced digital "
-       "fabrication.")
-
-_ratios = {}
+GAP = 0.2
+CAPTION_H = 0.24              # band under each gallery row for captions
+ROW_MIN_H = 2.4               # a row stops taking images once they would get shorter than this
+MAX_PER_ROW = 3
+MAX_ROWS_PER_PAGE = 2
+HEADING_H = 0.4
 
 
-def export(slug, name):
-    """Downscale/flatten a site image to JPEG in the build dir; return (relative path, aspect ratio)."""
-    src = os.path.join(ROOT, "assets", "images", slug, name)
-    out_name = f"{slug}--{os.path.splitext(name)[0]}.jpg"
-    dst = os.path.join(BUILD, "img", out_name)
-    if dst not in _ratios:
+# ---------- reading the site ----------
+
+class _Parser(HTMLParser):
+    """Collects text and attributes while tracking which classed elements we're inside."""
+
+    VOID = {"img", "br", "hr", "meta", "link", "input", "source"}
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.stack = []  # (tag, set(classes))
+
+    def inside(self, cls):
+        return any(cls in c for _, c in self.stack)
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        classes = set((a.get("class") or "").split())
+        self.start(tag, a, classes)
+        if tag not in self.VOID:
+            self.stack.append((tag, classes))
+
+    def handle_endtag(self, tag):
+        for i in range(len(self.stack) - 1, -1, -1):
+            if self.stack[i][0] == tag:
+                popped = self.stack[i]
+                del self.stack[i:]
+                self.end(tag, popped[1])
+                break
+
+    def start(self, tag, a, classes):
+        pass
+
+    def end(self, tag, classes):
+        pass
+
+
+def _clean(s):
+    return re.sub(r"\s+", " ", s).strip()
+
+
+class NavParser(_Parser):
+    def __init__(self):
+        super().__init__()
+        self.groups = []  # {"key", "title", "projects": [{"slug", "title", "keep_case"}]}
+        self._text = None
+
+    def start(self, tag, a, classes):
+        if tag == "div" and "nav-group" in classes:
+            self.groups.append({"key": a.get("data-section", ""), "title": "", "projects": []})
+        elif tag == "a" and "nav-group-title" in classes:
+            self._text = ["group"]
+        elif tag == "a" and a.get("data-project") and self.inside("nav-projects"):
+            self.groups[-1]["projects"].append({"slug": a["data-project"], "title": "",
+                                                "keep_case": "keep-case" in classes})
+            self._text = ["project"]
+
+    def handle_data(self, data):
+        if self._text:
+            self._text.append(data)
+
+    def end(self, tag, classes):
+        if tag == "a" and self._text:
+            kind, text = self._text[0], _clean("".join(self._text[1:]))
+            if kind == "group":
+                self.groups[-1]["title"] = text
+            else:
+                self.groups[-1]["projects"][-1]["title"] = text
+            self._text = None
+
+
+class ProjectParser(_Parser):
+    def __init__(self):
+        super().__init__()
+        self.hero = None
+        self.eyebrow = ""
+        self.advisor = ""
+        self.advisor_is_role = False
+        self.title = ""
+        self.paragraphs = []
+        self.items = []  # ("heading", text) | ("figure", src, caption, is_video)
+        self._text = None
+        self._fig = None
+
+    def start(self, tag, a, classes):
+        if tag == "img" and self.inside("project-hero") and not self.hero:
+            self.hero = a.get("src")
+        elif self.inside("project-intro") and tag in ("div", "h1", "p"):
+            if tag == "div" and "advisor" in classes:
+                self.advisor_is_role = "role" in classes
+            if tag == "p" or classes & {"eyebrow", "advisor"} or tag == "h1":
+                self._text = [tag if tag != "div" else ("advisor" if "advisor" in classes else "eyebrow")]
+        elif tag == "h2" and "gallery-heading" in classes:
+            self._text = ["heading"]
+        elif tag == "figure" and self.inside("project-gallery"):
+            self._fig = {"src": None, "caption": "", "video": False}
+        elif self._fig is not None and tag == "img" and not self._fig["src"]:
+            self._fig["src"] = a.get("src")
+        elif self._fig is not None and tag == "video":
+            self._fig["src"], self._fig["video"] = a.get("poster"), True
+        elif self._fig is not None and tag == "figcaption":
+            self._text = ["caption"]
+
+    def handle_data(self, data):
+        if self._text:
+            self._text.append(data)
+
+    def end(self, tag, classes):
+        if self._text and tag in ("div", "h1", "p", "h2", "figcaption"):
+            kind, text = self._text[0], _clean("".join(self._text[1:]))
+            self._text = None
+            if kind == "eyebrow":
+                self.eyebrow = text
+            elif kind == "advisor":
+                self.advisor = text
+            elif kind == "h1":
+                self.title = text
+            elif kind == "p" and text:
+                self.paragraphs.append(text)
+            elif kind == "heading":
+                self.items.append(("heading", text))
+            elif kind == "caption" and self._fig is not None:
+                self._fig["caption"] = text
+        if tag == "figure" and self._fig is not None:
+            if self._fig["src"]:
+                self.items.append(("figure", self._fig["src"], self._fig["caption"], self._fig["video"]))
+            self._fig = None
+
+
+class LandingParser(_Parser):
+    def __init__(self):
+        super().__init__()
+        self.tagline = ""
+        self.bio = ""
+        self._text = None
+
+    def start(self, tag, a, classes):
+        if self.inside("landing") and tag in ("h1", "p"):
+            self._text = [tag]
+
+    def handle_data(self, data):
+        if self._text:
+            self._text.append(data)
+
+    def end(self, tag, classes):
+        if self._text and tag in ("h1", "p"):
+            text = _clean("".join(self._text[1:]))
+            if tag == "h1":
+                self.tagline = text
+            elif not self.bio:
+                self.bio = text
+            self._text = None
+
+
+def _parse(parser, path):
+    with open(path, encoding="utf-8") as f:
+        parser.feed(f.read())
+    return parser
+
+
+def read_site():
+    nav = _parse(NavParser(), os.path.join(ROOT, "partials", "nav.html"))
+    landing = _parse(LandingParser(), os.path.join(ROOT, "index.html"))
+    groups = []
+    for g in nav.groups:
+        projects = []
+        for entry in g["projects"]:
+            page_dir = os.path.join(ROOT, "projects", entry["slug"])
+            p = _parse(ProjectParser(), os.path.join(page_dir, "index.html"))
+            resolve = lambda src: os.path.normpath(os.path.join(page_dir, src))
+            notes = [t[1:].strip() for t in p.paragraphs if t.startswith("*")]
+            projects.append({
+                "slug": entry["slug"],
+                "title": entry["title"] or p.title,
+                "keep_case": entry["keep_case"],
+                "eyebrow": p.eyebrow,
+                "advisor": p.advisor,
+                "advisor_label": "Role" if p.advisor_is_role else "Advisor",
+                "text": [t for t in p.paragraphs if not t.startswith("*")],
+                "notes": notes,
+                "hero": resolve(p.hero) if p.hero else None,
+                "items": [it if it[0] == "heading" else ("figure", resolve(it[1]), it[2], it[3]) for it in p.items],
+            })
+        groups.append({"key": g["key"], "title": g["title"], "projects": projects})
+    return landing.tagline, landing.bio, groups
+
+
+# ---------- images ----------
+
+_exported = {}
+
+
+def export(src):
+    """Flatten and downscale a site image (first frame for GIFs) to a JPEG in the build dir.
+    Returns (relative path, aspect ratio)."""
+    if src not in _exported:
+        rel = os.path.relpath(src, os.path.join(ROOT, "assets", "images"))
+        out_name = re.sub(r"[^A-Za-z0-9]+", "-", os.path.splitext(rel)[0]).strip("-") + ".jpg"
         im = Image.open(src)
+        im.seek(0)
         if im.mode in ("RGBA", "LA", "P"):
             im = im.convert("RGBA")
             flat = Image.new("RGB", im.size, BG)
@@ -201,141 +256,220 @@ def export(slug, name):
         else:
             im = im.convert("RGB")
         im.thumbnail((MAX_PX, MAX_PX), Image.LANCZOS)
-        im.save(dst, "JPEG", quality=82, optimize=True, progressive=True)
-        _ratios[dst] = im.width / im.height
-    return f"img/{out_name}", _ratios[dst]
+        im.save(os.path.join(BUILD, "img", out_name), "JPEG", quality=JPEG_Q, optimize=True, progressive=True)
+        _exported[src] = (f"img/{out_name}", im.width / im.height)
+    return _exported[src]
 
 
-def layout_rows(slug, rows, avail_h):
-    """Justified rows: every image in a row shares a height; the block is scaled to fit the page and centered."""
-    sized = []
-    for row in rows:
-        imgs = [export(slug, n) for n in row]
-        h = (CONTENT_W - GAP * (len(imgs) - 1)) / sum(r for _, r in imgs)
-        sized.append((imgs, h))
-    total_h = sum(h for _, h in sized) + GAP * (len(sized) - 1)
-    scale = min(1.0, (avail_h - GAP * (len(sized) - 1)) / (total_h - GAP * (len(sized) - 1)))
-    parts = []
-    for imgs, h in sized:
-        h *= scale
-        cells = "".join(
-            f'<img src="{src}" style="width:{h * r:.3f}in;height:{h:.3f}in" alt="">' for src, r in imgs
-        )
-        parts.append(f'<div class="row">{cells}</div>')
-    return "".join(parts)
-
+# ---------- layout ----------
 
 def esc(s):
     return html.escape(s, quote=True)
 
 
+def title_html(p, tag, cls=""):
+    classes = " ".join(c for c in (cls, "keep-case" if p["keep_case"] else "") if c)
+    attr = f' class="{classes}"' if classes else ""
+    return f'<{tag}{attr}>{esc(p["title"])}</{tag}>'
+
+
+def gallery_segments(items):
+    """Split a page's gallery into (heading, [figures]) runs; a gallery heading starts a new run."""
+    segments = [(None, [])]
+    for it in items:
+        if it[0] == "heading":
+            segments.append((it[1], []))
+        else:
+            segments[-1][1].append(it)
+    return [s for s in segments if s[1]]
+
+
+def pack_rows(figures):
+    """Greedy justified rows: add images to a row until they'd drop below ROW_MIN_H or MAX_PER_ROW."""
+    rows, row = [], []
+    for fig in figures:
+        ratio = export(fig[1])[1]
+        trial = row + [(fig, ratio)]
+        h = (CONTENT_W - GAP * (len(trial) - 1)) / sum(r for _, r in trial)
+        if row and (h < ROW_MIN_H or len(trial) > MAX_PER_ROW):
+            rows.append(row)
+            row = [(fig, ratio)]
+        else:
+            row = trial
+    if row:
+        rows.append(row)
+    return rows
+
+
+def row_height(row):
+    return (CONTENT_W - GAP * (len(row) - 1)) / sum(r for _, r in row)
+
+
+def paginate(rows, avail_h):
+    """Group rows onto pages, at most MAX_ROWS_PER_PAGE, as long as they fit without shrinking much."""
+    pages, page, used = [], [], 0.0
+    for row in rows:
+        h = min(row_height(row), avail_h - CAPTION_H) + CAPTION_H
+        if page and (len(page) >= MAX_ROWS_PER_PAGE or used + GAP + h > avail_h * 1.15):
+            pages.append(page)
+            page, used = [], 0.0
+        page.append(row)
+        used += h + (GAP if len(page) > 1 else 0)
+    if page:
+        pages.append(page)
+    return pages
+
+
+def render_rows(rows, avail_h, slug):
+    """Every image in a row shares a height; the block scales down to fit the page."""
+    natural = [row_height(r) for r in rows]
+    fixed = CAPTION_H * len(rows) + GAP * (len(rows) - 1)
+    scale = min(1.0, (avail_h - fixed) / sum(natural))
+    out = []
+    for row, h in zip(rows, natural):
+        h *= scale
+        cells = []
+        for (fig, ratio) in row:
+            src, _ = export(fig[1])
+            caption = fig[2] + (f" (video: {SITE}/projects/{slug})" if fig[3] else "")
+            cells.append(f'<figure style="width:{h * ratio:.3f}in"><img src="{src}" '
+                         f'style="width:{h * ratio:.3f}in;height:{h:.3f}in" alt="">'
+                         f'<figcaption>{esc(caption)}</figcaption></figure>')
+        out.append(f'<div class="row">{"".join(cells)}</div>')
+    return "".join(out)
+
+
 def chrome(label, folio):
-    return (f'<div class="running"><span>John Northrup</span><span>{esc(label)}</span></div>'
+    return (f'<div class="running"><span>John Northrup</span><span>{label}</span></div>'
             f'<div class="folio">{folio:02d}</div>')
 
 
-def build_html():
-    pages = []
-    contents = []
-    page_no = 3  # cover = 1, contents = 2
+def build_html(tagline, bio, groups, subtitle):
+    projects = [p for g in groups for p in g["projects"]]
 
-    for i, p in enumerate(PROJECTS, 1):
-        contents.append((i, p, page_no))
-        page_no += 1 + len(p["pages"])
+    # Lay out every project first so the contents page knows its page numbers.
+    project_pages = []  # (group, project, [page html builders])
+    for g in groups:
+        for p in g["projects"]:
+            pages = []
+            for heading, figures in gallery_segments(p["items"]):
+                avail = CONTENT_H - (HEADING_H if heading else 0)
+                for page_rows in paginate(pack_rows(figures), avail):
+                    pages.append((heading, page_rows, avail))
+            project_pages.append((g, p, pages))
 
-    # Cover
-    mosaic = "".join(
-        f'<div class="tile"><img src="{export(p["slug"], p["hero"])[0]}" alt=""></div>' for p in PROJECTS
-    )
-    pages.append(f"""
+    out = []
+    # Cover: intro on the left, a mosaic of the first six covers on the right.
+    tiles = "".join(f'<div class="tile"><img src="{export(p["hero"])[0]}" alt=""></div>'
+                    for p in [q for q in projects if q["hero"]][:6])
+    out.append(f"""
 <section class="page cover">
   <div class="cover-text">
-    <div class="eyebrow">Portfolio · 2023–2026</div>
-    <h1>John Northrup</h1>
-    <p class="tagline">{esc(TAGLINE)}</p>
-    <p class="bio">{esc(BIO)}</p>
-    <div class="contact"><a href="mailto:{EMAIL}">{EMAIL}</a><a href="https://jcnorthrup.com">jcnorthrup.com</a></div>
+    <div class="eyebrow">{esc(subtitle)}</div>
+    <h1>John<br>Northrup</h1>
+    <p class="tagline">{esc(tagline)}</p>
+    <p class="bio">{esc(bio)}</p>
+    <div class="contact"><a href="mailto:{EMAIL}">{EMAIL}</a><a href="https://{SITE}">{SITE}</a></div>
   </div>
-  <div class="mosaic">{mosaic}</div>
+  <div class="mosaic">{tiles}</div>
 </section>""")
 
-    # Contents
-    items = "".join(
-        f'<li><span class="idx">{i:02d}</span><span class="t">{esc(p["title"])}</span>'
-        f'<span class="e">{esc(p["eyebrow"])}</span><span class="pg">{pg:02d}</span></li>'
-        for i, p, pg in contents
-    )
-    pages.append(f"""
+    # Contents, grouped like the sidebar.
+    page_no, rows_html, n = 3, [], 0
+    for g in groups:
+        rows_html.append(f'<li class="group">{esc(g["title"])}</li>')
+        for gg, p, pages in project_pages:
+            if gg is not g:
+                continue
+            n += 1
+            rows_html.append(f'<li><span class="idx">{n:02d}</span>{title_html(p, "span", "t")}'
+                             f'<span class="e">{esc(p["eyebrow"])}</span><span class="pg">{page_no:02d}</span></li>')
+            page_no += 1 + len(pages)
+    out.append(f"""
 <section class="page contents">
   {chrome("Contents", 2)}
-  <div class="contents-inner">
-    <div class="eyebrow">Contents</div>
-    <ol>{items}</ol>
-  </div>
+  <div class="contents-inner"><ol>{''.join(rows_html)}</ol></div>
 </section>""")
 
-    folio = 3
-    for i, p in enumerate(PROJECTS, 1):
-        hero_src, hero_r = export(p["slug"], p["hero"])
-        advisor = f'<div class="advisor">Advisor: {esc(p["advisor"])}</div>' if p.get("advisor") else ""
+    folio, n = 3, 0
+    for g, p, pages in project_pages:
+        n += 1
+        label = f'{esc(g["title"])} · <span class="{"keep-case" if p["keep_case"] else ""}">{esc(p["title"])}</span>'
+        advisor = (f'<div class="advisor">{p["advisor_label"]} · {esc(p["advisor"])}</div>' if p["advisor"] else "")
         body = "".join(f"<p>{esc(t)}</p>" for t in p["text"])
-        note = f'<p class="note">*{esc(p["note"])}</p>' if p.get("note") else ""
-        text_block = (f'<div class="num">{i:02d}</div><div class="eyebrow">{esc(p["eyebrow"])}</div>'
-                      f'<h2>{esc(p["title"])}</h2>{advisor}<div class="swatch" style="background:{p["color"]}"></div>'
-                      f'{body}{note}')
-        label = f'{i:02d} — {p["title"]}'
-
-        if hero_r >= 1.6:
-            img_h = min(CONTENT_W / hero_r, 4.3)
-            pages.append(f"""
+        notes = "".join(f'<p class="note">*{esc(t)}</p>' for t in p["notes"])
+        text_block = (f'<div class="num">{n:02d}</div>{title_html(p, "h2")}'
+                      f'<div class="eyebrow">{esc(p["eyebrow"])}</div>{advisor}{body}{notes}')
+        if p["hero"]:
+            hero_src, hero_r = export(p["hero"])
+        else:
+            hero_src, hero_r = None, 1.0
+        long_text = sum(len(t) for t in p["text"]) > 900
+        if hero_src and hero_r >= 1.6 and not long_text:
+            img_h = min(CONTENT_W / hero_r, 4.2)
+            out.append(f"""
 <section class="page opener top">
   {chrome(label, folio)}
   <img class="hero" src="{hero_src}" style="width:{img_h * hero_r:.3f}in;height:{img_h:.3f}in" alt="">
   <div class="opener-text cols">{text_block}</div>
 </section>""")
         else:
-            box_w, box_h = 6.3, CONTENT_H
+            box_w, box_h = 5.6, CONTENT_H
             w = min(box_w, box_h * hero_r)
-            pages.append(f"""
+            hero = (f'<img class="hero" src="{hero_src}" style="width:{w:.3f}in;height:{w / hero_r:.3f}in" alt="">'
+                    if hero_src else "")
+            out.append(f"""
 <section class="page opener side">
   {chrome(label, folio)}
-  <div class="hero-box" style="width:{box_w}in;height:{box_h}in">
-    <img class="hero" src="{hero_src}" style="width:{w:.3f}in;height:{w / hero_r:.3f}in" alt="">
-  </div>
+  <div class="hero-box" style="width:{box_w}in;height:{box_h}in">{hero}</div>
   <div class="opener-text">{text_block}</div>
 </section>""")
         folio += 1
 
-        for spec in p["pages"]:
-            heading = f'<h3 class="gallery-heading">{esc(spec["heading"])}</h3>' if spec.get("heading") else ""
-            avail = CONTENT_H - (0.4 if heading else 0)
-            pages.append(f"""
+        for heading, page_rows, avail in pages:
+            head = f'<h3 class="gallery-heading">{esc(heading)}</h3>' if heading else ""
+            out.append(f"""
 <section class="page gallery">
   {chrome(label, folio)}
-  {heading}
-  <div class="rows" style="height:{avail:.3f}in">{layout_rows(p["slug"], spec["rows"], avail)}</div>
+  {head}
+  <div class="rows" style="height:{avail:.3f}in">{render_rows(page_rows, avail, p["slug"])}</div>
 </section>""")
             folio += 1
 
-    css = open(os.path.join(os.path.dirname(__file__), "print.css")).read()
-    css = (css.replace("{{PAGE_W}}", f"{PAGE_W}in").replace("{{PAGE_H}}", f"{PAGE_H}in")
-              .replace("{{MX}}", f"{MARGIN_X}in").replace("{{MT}}", f"{MARGIN_TOP}in")
-              .replace("{{MB}}", f"{MARGIN_BOTTOM}in").replace("{{GAP}}", f"{GAP}in"))
+    css = open(os.path.join(HERE, "print.css"), encoding="utf-8").read()
+    for k, v in {"PAGE_W": PAGE_W, "PAGE_H": PAGE_H, "MX": MARGIN_X, "MT": MARGIN_TOP,
+                 "MB": MARGIN_BOTTOM, "GAP": GAP, "CAP": CAPTION_H}.items():
+        css = css.replace("{{" + k + "}}", f"{v}in")
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>John Northrup — Portfolio</title>
 <style>{css}</style></head>
-<body>{''.join(pages)}</body></html>"""
+<body>{''.join(out)}</body></html>"""
+
+
+def render(groups, tagline, bio, subtitle, output):
+    html_path = os.path.join(BUILD, os.path.splitext(os.path.basename(output))[0] + ".html")
+    with open(html_path, "w", encoding="utf-8") as f:
+        f.write(build_html(tagline, bio, groups, subtitle))
+    subprocess.run(["node", os.path.join(HERE, "render.js"), html_path, output], check=True)
+    print(f"Wrote {os.path.relpath(output, ROOT)} ({os.path.getsize(output) / 1e6:.1f} MB)")
 
 
 def main():
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--full-only", action="store_true", help="skip the per-group PDFs")
+    args = ap.parse_args()
+
     shutil.rmtree(BUILD, ignore_errors=True)
     os.makedirs(os.path.join(BUILD, "img"))
-    shutil.copytree(os.path.join(os.path.dirname(__file__), "fonts"), os.path.join(BUILD, "fonts"))
-    html_path = os.path.join(BUILD, "portfolio.html")
-    with open(html_path, "w") as f:
-        f.write(build_html())
-    subprocess.run(["node", os.path.join(os.path.dirname(__file__), "render.js"), html_path, OUTPUT], check=True)
-    print(f"Wrote {OUTPUT} ({os.path.getsize(OUTPUT) / 1e6:.1f} MB)")
+    shutil.copytree(os.path.join(HERE, "fonts"), os.path.join(BUILD, "fonts"))
+
+    tagline, bio, groups = read_site()
+    render(groups, tagline, bio, "Portfolio · 2023–2026", os.path.join(ROOT, "John-Northrup-Portfolio.pdf"))
+    if not args.full_only:
+        for g in groups:
+            if g["projects"]:
+                render([g], tagline, bio, f'Portfolio · {g["title"]}',
+                       os.path.join(ROOT, f'John-Northrup-Portfolio-{g["key"]}.pdf'))
 
 
 if __name__ == "__main__":

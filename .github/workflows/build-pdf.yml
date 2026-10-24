@@ -1,0 +1,68 @@
+# Rebuild the PDF portfolios whenever the site changes, so they always match it.
+# tools/pdf/build.py reads the sidebar and project pages directly; this just runs it and commits the PDFs.
+name: Build PDF portfolio
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "partials/**"
+      - "projects/**"
+      - "assets/images/**"
+      - "tools/pdf/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: build-pdf
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: |
+          pip install pillow
+          npm install --prefix tools/pdf
+          npx --prefix tools/pdf playwright install --with-deps chromium
+
+      - name: Build PDFs
+        run: NODE_PATH=tools/pdf/node_modules python tools/pdf/build.py
+
+      - name: Commit PDFs if they changed
+        id: commit
+        run: |
+          git add John-Northrup-Portfolio*.pdf
+          if git diff --cached --quiet; then
+            echo "PDFs unchanged."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Rebuild PDF portfolios from the site"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Pushes made with the workflow's token don't always start a Pages build, so ask for one.
+      - name: Request a Pages rebuild
+        if: steps.commit.outputs.changed == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
