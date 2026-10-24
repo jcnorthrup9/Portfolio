@@ -1,17 +1,46 @@
 <header class="nav" id="nav">
-  <a class="nav-name" href="../index.html" data-project="landing">John Northrup</a>
-  <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-links">
-    <span>Index</span>
+  <a class="nav-name" href="../index.html" data-project="landing">John<br>Northrup</a>
+  <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="Menu">
+    <span></span><span></span><span></span>
   </button>
-  <nav class="nav-links" id="nav-links">
-    <a href="../prototype/index.html" data-project="prototype"><span class="nav-index">01</span>Prototype</a>
-    <a href="../interface-architecture/index.html" data-project="interface-architecture"><span class="nav-index">02</span>Interface Architecture</a>
-    <a href="../measurement-grids/index.html" data-project="measurement-grids"><span class="nav-index">03</span>Performing Arts Theater in Little Tokyo</a>
-    <a href="../van-nuys-municipal/index.html" data-project="van-nuys-municipal"><span class="nav-index">04</span>A Municipal Building in Van Nuys</a>
-    <a href="../la-dance-shed/index.html" data-project="la-dance-shed"><span class="nav-index">05</span>LA Dance Shed</a>
-    <a href="../casa-musica/index.html" data-project="casa-musica"><span class="nav-index">06</span>Casa Musica</a>
-    <a href="../design-documents/index.html" data-project="design-documents"><span class="nav-index">07</span>Design Documents</a>
-    <a href="../advanced-project-delivery/index.html" data-project="advanced-project-delivery"><span class="nav-index">08</span>Advanced Project Delivery</a>
-    <a href="../details-details/index.html" data-project="details-details"><span class="nav-index">09</span>Details, Details</a>
-  </nav>
+  <div class="nav-links" id="nav-links">
+    <!-- Projects grouped by category. This list also sets each project's "Next" link: the next project
+         is the one listed after it here, looping back to the top. data-section matches the landing-page
+         section ids, so e.g. jcnorthrup.com/#drawing jumps to that group. -->
+    <div class="nav-group" data-section="code">
+      <a class="nav-group-title" href="../index.html#code" data-anchor="code">Code &amp; AI</a>
+      <nav class="nav-projects">
+        <a href="../memory-machine/index.html" data-project="memory-machine" class="keep-case">memoryMachine</a>
+        <a href="../prototype/index.html" data-project="prototype">Prototype</a>
+        <a href="../interface-architecture/index.html" data-project="interface-architecture">Interface Architecture</a>
+      </nav>
+    </div>
+    <div class="nav-group" data-section="architecture">
+      <a class="nav-group-title" href="../index.html#architecture" data-anchor="architecture">Architecture</a>
+      <nav class="nav-projects">
+        <a href="../design-school-cdmx/index.html" data-project="design-school-cdmx">Design School in Mexico City</a>
+        <a href="../measurement-grids/index.html" data-project="measurement-grids">Little Tokyo Theater</a>
+        <a href="../la-dance-shed/index.html" data-project="la-dance-shed">LA Dance Shed</a>
+      </nav>
+    </div>
+    <div class="nav-group" data-section="drawing">
+      <a class="nav-group-title" href="../index.html#drawing" data-anchor="drawing">Drawing &amp; Documentation</a>
+      <nav class="nav-projects">
+        <a href="../design-documents/index.html" data-project="design-documents">Design Documents</a>
+        <a href="../advanced-project-delivery/index.html" data-project="advanced-project-delivery">Advanced Project Delivery</a>
+      </nav>
+    </div>
+    <div class="nav-group" data-section="fabrication">
+      <a class="nav-group-title" href="../index.html#fabrication" data-anchor="fabrication">Fabrication &amp; Mechanical</a>
+      <nav class="nav-projects">
+        <a href="../elf-o-matic-3000/index.html" data-project="elf-o-matic-3000">Elf-O-Matic-3000</a>
+        <a href="../details-details/index.html" data-project="details-details">Details, Details</a>
+      </nav>
+    </div>
+    <div class="nav-foot">
+      <a href="../John-Northrup-Resume.pdf" data-file="John-Northrup-Resume.pdf" target="_blank" rel="noopener">Resume ↗</a>
+      <a href="../John-Northrup-Portfolio.pdf" data-file="John-Northrup-Portfolio.pdf" target="_blank" rel="noopener">Portfolio PDF ↗</a>
+      <a href="mailto:jcnorthrup@gmail.com">Email</a>
+    </div>
+  </div>
 </header>

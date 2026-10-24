@@ -10,6 +10,9 @@ const types = {
   ".css": "text/css",
   ".js": "text/javascript",
   ".svg": "image/svg+xml",
+  ".pdf": "application/pdf",
+  ".mp4": "video/mp4",
+  ".gif": "image/gif",
 };
 
 http.createServer((req, res) => {

@@ -1,25 +1,5 @@
-const PROJECT_TITLES = {
-  "interface-architecture": "Interface Architecture",
-  "measurement-grids": "Performing Arts Theater in Little Tokyo",
-  "elevation-final-model": "Elevation Study — Final Model",
-  "van-nuys-municipal": "A Municipal Building in Van Nuys",
-  "la-dance-shed": "LA Dance Shed",
-  "casa-musica": "Casa Musica",
-  "design-documents": "Design Documents",
-  "advanced-project-delivery": "Advanced Project Delivery",
-  "details-details": "Details, Details",
-  "prototype": "Prototype",
-};
-
-let scrollSpyObserver;
-let frontierObserver;
-let currentUrlSlug;
-const fadeArticles = [];
-let fadeRaf = null;
-
-// Absolute path to the site's own root, computed once from the real initial URL
-// (before any pushState can mutate it) — works whether the site is served from
-// the domain root or a subpath (e.g. GitHub Pages project sites like /Portfolio/).
+// Absolute path to the site's own root — works whether the site is served from the domain root or a
+// subpath (e.g. GitHub Pages project sites like /Portfolio/).
 const SITE_ROOT = (() => {
   const p = location.pathname;
   return p.includes("/projects/") ? p.split("/projects/")[0] + "/" : p.substring(0, p.lastIndexOf("/") + 1);
@@ -30,192 +10,37 @@ function urlForSlug(slug) {
 }
 
 async function loadNav() {
-  // Landing-page links are written relative to the site root; pin them now, because
-  // scrollspy's pushState later changes the URL they would otherwise resolve against.
-  document.querySelectorAll(".landing a[href], .project-grid a[href]").forEach((a) => {
-    a.setAttribute("href", SITE_ROOT + a.getAttribute("href"));
-  });
-
   const res = await fetch(`${SITE_ROOT}partials/nav.html`);
-  const html = await res.text();
-  const mount = document.getElementById("nav-mount");
-  mount.innerHTML = html;
+  document.getElementById("nav-mount").innerHTML = await res.text();
 
-  document.querySelectorAll(".nav-links a, .nav-name").forEach((a) => {
-    if (a.dataset.project) a.setAttribute("href", urlForSlug(a.dataset.project));
-  });
+  // The partial's hrefs are written for a project page; repoint them from the real site root.
+  document.querySelectorAll(".nav [data-project]").forEach((a) => a.setAttribute("href", urlForSlug(a.dataset.project)));
+  document.querySelectorAll(".nav [data-anchor]").forEach((a) => a.setAttribute("href", `${urlForSlug("landing")}#${a.dataset.anchor}`));
+  document.querySelectorAll(".nav [data-file]").forEach((a) => a.setAttribute("href", SITE_ROOT + a.dataset.file));
+
+  const current = document.body.dataset.project;
+  document.querySelectorAll(".nav-projects a").forEach((a) => a.classList.toggle("active", a.dataset.project === current));
 
   const toggle = document.getElementById("nav-toggle");
   const links = document.getElementById("nav-links");
-  toggle.addEventListener("click", () => {
-    const open = links.classList.toggle("open");
-    toggle.setAttribute("aria-expanded", open);
-  });
+  toggle.addEventListener("click", () => toggle.setAttribute("aria-expanded", links.classList.toggle("open")));
 
-  setActiveNav();
-  initScrollSpy();
-  initInfiniteScroll();
-  initFadeTransitions();
+  setNextLink(current);
 }
 
-function setActiveNav() {
-  const current = document.body.dataset.project;
-  if (!current) return;
-  document.querySelectorAll(".nav-links a, .nav-name").forEach((a) => {
-    a.classList.toggle("active", a.dataset.project === current);
-  });
-}
-
-function setActiveNavByProject(slug) {
-  document.querySelectorAll(".nav-links a, .nav-name").forEach((a) => {
-    a.classList.toggle("active", a.dataset.project === slug);
-  });
-}
-
-function ensureHeroTitleCard(hero) {
-  let card = hero.querySelector(".hero-title-card");
-  if (!card) {
-    const slug = hero.dataset.spyProject;
-    const title = PROJECT_TITLES[slug] || "";
-    const eyebrowEl = hero.parentElement && hero.parentElement.querySelector(".project-intro .eyebrow");
-    const eyebrow = eyebrowEl ? eyebrowEl.textContent : "";
-
-    card = document.createElement("div");
-    card.className = "hero-title-card";
-    card.innerHTML = `
-      ${eyebrow ? `<span class="hero-title-eyebrow">${eyebrow}</span>` : ""}
-      <span class="hero-title-main">${title}</span>
-    `;
-    hero.appendChild(card);
+// "Next" follows the sidebar order and loops; a page not listed there (unlisted work) continues from the top.
+function setNextLink(current) {
+  const next = document.querySelector(".next-project");
+  if (!next) return;
+  const links = [...document.querySelectorAll(".nav-projects a[data-project]")];
+  if (!links.length) return;
+  const target = links[(links.findIndex((a) => a.dataset.project === current) + 1) % links.length];
+  next.setAttribute("href", urlForSlug(target.dataset.project));
+  const label = next.querySelector("h2");
+  if (label) {
+    label.textContent = target.textContent;
+    label.classList.toggle("keep-case", target.classList.contains("keep-case"));
   }
-  return card;
-}
-
-function flashHeroTitle(hero) {
-  const card = ensureHeroTitleCard(hero);
-  card.classList.remove("flash");
-  void card.offsetWidth; // force reflow so the animation restarts on repeat entries
-  card.classList.add("flash");
-}
-
-function initScrollSpy() {
-  currentUrlSlug = document.body.dataset.project;
-
-  scrollSpyObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        const slug = entry.target.dataset.spyProject;
-        setActiveNavByProject(slug);
-
-        if (entry.target.classList.contains("project-hero")) {
-          flashHeroTitle(entry.target);
-        }
-
-        if (slug !== currentUrlSlug) {
-          currentUrlSlug = slug;
-          history.pushState({ slug }, "", urlForSlug(slug));
-          document.title = slug === "landing" ? "John Northrup — Portfolio" : (PROJECT_TITLES[slug] ? `${PROJECT_TITLES[slug]} — John Northrup` : document.title);
-        }
-      });
-    },
-    { rootMargin: "-40% 0px -40% 0px", threshold: 0 }
-  );
-
-  document.querySelectorAll("[data-spy-project]").forEach((section) => scrollSpyObserver.observe(section));
-}
-
-function initInfiniteScroll() {
-  const anchor = document.querySelector(".next-project");
-  if (anchor) observeFrontier(anchor);
-}
-
-function normalizeAnchorHref(anchor) {
-  const slug = anchor.dataset.spyProject;
-  if (slug) anchor.setAttribute("href", urlForSlug(slug));
-}
-
-function observeFrontier(anchor) {
-  normalizeAnchorHref(anchor);
-
-  if (frontierObserver) frontierObserver.disconnect();
-  frontierObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          frontierObserver.disconnect();
-          appendNextProject(entry.target);
-        }
-      });
-    },
-    { rootMargin: "1000px 0px 1000px 0px" }
-  );
-  frontierObserver.observe(anchor);
-}
-
-async function appendNextProject(anchor) {
-  const slug = anchor.dataset.spyProject;
-
-  const res = await fetch(urlForSlug(slug));
-  const html = await res.text();
-  const fetchedDoc = new DOMParser().parseFromString(html, "text/html");
-  const article = fetchedDoc.querySelector(".project");
-  if (!article) return;
-
-  const nextAnchor = fetchedDoc.querySelector(".next-project");
-
-  anchor.replaceWith(article);
-  registerFadeArticle(article);
-
-  const hero = article.querySelector(".project-hero");
-  if (hero) scrollSpyObserver.observe(hero);
-
-  if (nextAnchor) {
-    document.querySelector("main").appendChild(nextAnchor);
-    observeFrontier(nextAnchor);
-  }
-
-  updateFades();
-}
-
-/* ---------- scroll-linked cross-fade between projects ---------- */
-function initFadeTransitions() {
-  document.querySelectorAll(".project").forEach(registerFadeArticle);
-  window.addEventListener("scroll", scheduleFadeUpdate, { passive: true });
-  window.addEventListener("resize", scheduleFadeUpdate);
-  updateFades();
-}
-
-function registerFadeArticle(article) {
-  fadeArticles.push(article);
-}
-
-function scheduleFadeUpdate() {
-  if (fadeRaf) return;
-  fadeRaf = requestAnimationFrame(() => {
-    fadeRaf = null;
-    updateFades();
-  });
-}
-
-function updateFades() {
-  const vh = window.innerHeight;
-  const fadeZone = Math.min(vh * 0.3, 350);
-
-  fadeArticles.forEach((article) => {
-    const rect = article.getBoundingClientRect();
-    let opacity = 1;
-
-    if (rect.bottom < fadeZone) {
-      // this project is finishing — its bottom edge is exiting past the top of the window
-      opacity = Math.max(0, rect.bottom / fadeZone);
-    } else if (rect.top > vh - fadeZone) {
-      // this project is just beginning — its top edge hasn't cleared the fade zone yet
-      opacity = Math.max(0, (vh - rect.top) / fadeZone);
-    }
-
-    article.style.opacity = opacity;
-  });
 }
 
 document.addEventListener("DOMContentLoaded", loadNav);

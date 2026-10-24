@@ -73,7 +73,7 @@ PROJECTS = [
     },
     {
         "slug": "measurement-grids",
-        "title": "Performing Arts Theater in Little Tokyo",
+        "title": "Little Tokyo Theater",
         "eyebrow": "FA23, DS 1100, 1GA Studio",
         "advisor": "Matthew Au",
         "color": "#90C5CB",
@@ -100,33 +100,11 @@ PROJECTS = [
             {"heading": "Final Model", "rows": [["final-model-drawing.jpg"]]},
         ],
     },
-    {
-        "slug": "van-nuys-municipal",
-        "title": "A Municipal Building in Van Nuys",
-        "eyebrow": "SP24, DS 1101, 1GB Studio",
-        "advisor": "Anna Neimark",
-        "color": "#A1A1A3",
-        "hero": "cover.png",
-        "text": [
-            "This studio course explored the unlikely pairings of parking garages and municipal buildings, "
-            "producing an interaction between various spaces which often results in overlap, much like a collage of "
-            "repurposed materials, the project creates a palimpsest of various conundrums. Through various studies "
-            "of redaction, erasure, adaptation, annotation and material/production methodologies these works were "
-            "produced. The acts of erasure and redaction are ones often violent or harmful, can also be useful "
-            "mechanisms for clearing, filtering, compartmentalizing and synthesizing. Various influences were "
-            "combined here, from the base studies of the 17th Century Fortress, Castillo San Marcos, the Faculdade "
-            "de Arquitetura, Daniel Libeskind's micromegas. The contrasting components become a study of composed "
-            "disorganization, collage, and porosity.",
-        ],
-        "pages": [
-            {"rows": [["detail-1.png", "detail-2.png"]]},
-            {"rows": [["detail-3.png"], ["detail-4.png"]]},
-        ],
-    },
+    # A Municipal Building in Van Nuys unlisted Oct 2026; its page remains at projects/van-nuys-municipal/.
     {
         "slug": "la-dance-shed",
         "title": "LA Dance Shed",
-        "eyebrow": "SP24, 2GA Studio, with Milan Sledge",
+        "eyebrow": "FA24, 2GA Studio, with Milan Sledge",
         "color": "#8D4920",
         "hero": "cover.png",
         "text": [
@@ -144,28 +122,7 @@ PROJECTS = [
             {"rows": [["detail-1.png", "detail-2.png"], ["detail-3.png", "detail-4.png"]]},
         ],
     },
-    {
-        "slug": "casa-musica",
-        "title": "Casa Musica",
-        "eyebrow": "FA24, Visual Studies III, 2GA Studio",
-        "advisor": "Marcelo Spina",
-        "color": "#9E7A54",
-        "hero": "cover.png",
-        "text": [
-            "Casa Musica sits within an active desert quarry, its long gabled roofs and sawtooth wings pitched to "
-            "echo the surrounding excavated terrain. A brick base grounds the structure while a heavy timber roof "
-            "structure spans overhead, its gable end fully glazed to frame the quarry and mountains beyond. Inside, "
-            "the room is deliberately unfinished — raw stone brought in from the site sits alongside cast furniture, "
-            "blurring the line between what was quarried and what was built. The result is a communal gathering "
-            "space for music and performance that reads as much as an extension of the landscape as a building set "
-            "within it.",
-        ],
-        "pages": [
-            {"rows": [["wormseye-chunk.png"]]},
-            {"rows": [["aerial-render.png", "wormseye-1.png"], ["pedestrian-1.png", "pedestrian-2.png"]]},
-            {"rows": [["interior.png"]]},
-        ],
-    },
+    # Casa Musica unlisted Oct 2026 (cut to the strongest work); its page remains at projects/casa-musica/.
     {
         "slug": "design-documents",
         "title": "Design Documents",

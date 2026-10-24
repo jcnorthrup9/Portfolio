@@ -1,480 +1,338 @@
+@import url("https://fonts.googleapis.com/css2?family=Marcellus&display=swap");
+
+/* ---------- tokens ---------- */
+:root {
+  --ink: #2a2724;        /* names, titles, active links */
+  --text: #5c564d;       /* body copy */
+  --muted: #a49d91;      /* nav links, dates, captions */
+  --rule: #ece9e3;
+  --bg: #ffffff;
+  --sidebar: 260px;
+  --display: "Marcellus", "Times New Roman", serif;
+}
+
 /* ---------- reset ---------- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #1a1a1a;
-  background: #f7f6f3;
-  line-height: 1.5;
+  font-family: var(--display);
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 img { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
+[hidden] { display: none !important; }
+/* a name with its own casing (e.g. memoryMachine) survives the all-caps label style */
+.keep-case { text-transform: none !important; letter-spacing: 0.04em; }
 
-/* ---------- sidebar nav ---------- */
+/* small spaced capitals: the site's label voice */
+.caps,
+.nav-group-title,
+.nav-projects a,
+.nav-foot a,
+.section-title,
+.tile-title,
+.tile-date,
+.project-intro .eyebrow,
+.project-intro .advisor,
+.gallery-heading,
+figcaption,
+.next-project {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ---------- sidebar ---------- */
 .nav {
   position: fixed;
   top: 0;
   left: 0;
-  width: 220px;
+  width: var(--sidebar);
   height: 100vh;
-  padding: 2.5rem 1.75rem;
+  overflow-y: auto;
+  padding: 3.5rem 1.5rem 2rem 2rem;
   display: flex;
   flex-direction: column;
   gap: 3rem;
-  border-right: 1px solid #e2e0da;
-  background: #f7f6f3;
+  background: var(--bg);
   z-index: 100;
 }
 .nav-name {
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-size: 1.7rem;
+  line-height: 1.15;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
 }
 .nav-toggle { display: none; }
 .nav-links {
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
-  font-size: 0.85rem;
+  gap: 2.25rem;
+  flex: 1;
 }
-.nav-links a {
+.nav-group-title {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--ink);
+  margin-bottom: 0.6rem;
+}
+.nav-projects {
   display: flex;
-  gap: 0.6rem;
-  color: #8a8579;
-  letter-spacing: 0.02em;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.nav-projects a {
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: var(--muted);
   transition: color 0.15s ease;
 }
-.nav-index {
-  font-variant-numeric: tabular-nums;
-  color: #c3bfb4;
+.nav-projects a:hover,
+.nav-projects a.active { color: var(--ink); }
+.nav-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: auto;
 }
-.nav-links a:hover,
-.nav-links a.active {
-  color: #1a1a1a;
+.nav-foot a {
+  font-size: 0.7rem;
+  color: var(--ink);
+  transition: color 0.15s ease;
 }
-.nav-links a.active .nav-index { color: #1a1a1a; }
+.nav-foot a:hover { color: var(--muted); }
 
 /* ---------- page shell ---------- */
 main {
-  margin-left: 220px;
+  margin-left: var(--sidebar);
+  padding: 3.5rem 3rem 5rem 1rem;
+  max-width: calc(var(--sidebar) + 1180px);
 }
 
-/* ---------- landing page ---------- */
+/* ---------- landing ---------- */
 .landing {
-  padding: 2.5rem 4rem 1.5rem;
-  max-width: 720px;
+  max-width: 640px;
+  margin-bottom: 3.5rem;
 }
 .landing h1 {
-  font-size: 1.2rem;
-  font-weight: 500;
+  font-weight: 400;
+  font-size: 1.15rem;
+  line-height: 1.5;
+  color: var(--ink);
   margin-bottom: 0.6rem;
-  line-height: 1.4;
-  white-space: nowrap;
 }
 .landing p {
-  color: #6b6659;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
 }
-.landing-pdf {
-  display: inline-block;
-  margin-top: 0.9rem;
-  font-size: 0.85rem;
-  color: #1a1a1a;
-  border-bottom: 1px solid #c3bfb4;
-  padding-bottom: 1px;
-  transition: border-color 0.15s ease;
+.landing-section { margin-bottom: 3.5rem; scroll-margin-top: 2rem; }
+.section-title {
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--ink);
+  padding-bottom: 0.6rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--rule);
 }
-.landing-pdf:hover { border-color: #1a1a1a; }
-.landing-pdf + .landing-pdf { margin-left: 1.5rem; }
-/* ---------- landing project grid ---------- */
 .project-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-auto-flow: dense;
-  gap: 2px;
-  background: #e2e0da;
+  gap: 2.25rem 1.75rem;
 }
-.grid-tile {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  overflow: visible;
-  display: block;
-}
+.grid-tile { display: block; }
 .tile-image-wrap {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
   display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #f4f2ee;
 }
 .tile-image-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.5s ease, opacity 0.3s ease;
 }
-.grid-tile:hover .tile-image-wrap img {
-  transform: scale(1.04);
-}
-.grid-label {
-  position: absolute;
-  inset: auto 0 0 0;
-  padding: 0.85rem 1rem;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
-  color: #fff;
-  font-size: 0.78rem;
-  letter-spacing: 0.03em;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  z-index: 1;
-}
-.grid-tile:hover .grid-label {
-  opacity: 1;
-}
-
-/* color swatch that slides out of a tile on hover, revealing title + date */
-.grid-swatch-slide {
-  position: absolute;
-  top: 0;
-  left: 100%;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  text-align: center;
-  padding: 1rem;
-  transform: scaleX(0);
-  transform-origin: left center;
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 0.3s ease, opacity 0.2s ease;
-  z-index: 5;
-}
-.grid-tile:hover .grid-swatch-slide {
-  transform: scaleX(1);
-  opacity: 1;
-  pointer-events: auto;
-}
-/* rightmost column: sliding right would run off the row, so slide down instead */
-.grid-tile:nth-child(3n) .grid-swatch-slide {
-  top: 100%;
-  left: 0;
-  transform: scaleY(0);
-  transform-origin: top center;
-}
-.grid-tile:nth-child(3n):hover .grid-swatch-slide {
-  transform: scaleY(1);
-}
-.swatch-preview {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-}
-.swatch-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.grid-tile:hover .tile-image-wrap img { transform: scale(1.025); opacity: 0.92; }
+.tile-title {
   display: block;
-  opacity: 0.32;
-  mix-blend-mode: luminosity;
+  margin-top: 0.8rem;
+  font-size: 0.78rem;
+  color: var(--ink);
 }
-.swatch-title {
-  position: relative;
-  font-size: 0.85rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  line-height: 1.3;
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.45);
-}
-.swatch-date {
-  position: relative;
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  opacity: 0.8;
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.45);
+.tile-date {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--muted);
 }
 
 /* ---------- project pages ---------- */
-.project { display: block; will-change: opacity; }
-.project-hero { position: relative; width: 100%; }
-.project-hero img { width: 100%; height: auto; }
-
-/* large centered title that briefly flashes over the hero when a project comes into view */
-.hero-title-card {
-  position: absolute;
-  inset: 0;
+/* Every page keeps its original markup; this reflows it into one calm column:
+   intro first, then each image on its own row with its caption. */
+.project {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  text-align: center;
-  padding: 2rem;
-  color: #fff;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 3;
+  max-width: 1120px;
 }
-.hero-title-card .hero-title-eyebrow {
-  font-size: 0.8rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  opacity: 0.85;
-  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6);
-}
-.hero-title-card .hero-title-main {
-  font-size: 2.4rem;
-  font-weight: 500;
-  line-height: 1.2;
-  max-width: 20ch;
-  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.65);
-}
-.hero-title-card.flash {
-  animation: heroTitleFlash 2.4s ease forwards;
-}
-@keyframes heroTitleFlash {
-  0% { opacity: 0; }
-  12% { opacity: 1; }
-  65% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-/* letterboxed hero: for very wide/short source images that read as tightly
-   cropped when stretched edge-to-edge — inset with vertical breathing room instead */
-.project-hero.hero-letterboxed {
-  display: flex;
-  justify-content: center;
-  background: #e2e0da;
-  padding: 3rem 0;
-}
-.project-hero.hero-letterboxed img {
-  width: auto;
-  max-width: 100%;
-  height: auto;
-  max-height: 70vh;
-}
-
 .project-intro {
-  max-width: 640px;
-  padding: 3.5rem 4rem 2rem;
-}
-.project-intro .eyebrow {
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #a39d8f;
-  margin-bottom: 0.35rem;
-}
-.project-intro .advisor {
-  font-size: 0.72rem;
-  color: #b5b0a3;
-  margin-bottom: 1.1rem;
+  order: -1;
+  align-self: flex-start;
+  max-width: 760px;
+  text-align: left;
+  margin: 0 0 3.5rem;
 }
 .project-intro h1 {
-  font-size: 1.6rem;
-  font-weight: 500;
-  margin-bottom: 1.25rem;
+  order: -1;
+  font-weight: 400;
+  font-size: 2rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 0.6rem;
 }
+.project-intro { display: flex; flex-direction: column; align-items: flex-start; }
+.project-intro .eyebrow {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.project-intro .advisor {
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-bottom: 1.75rem;
+}
+.project-intro .advisor::before { content: "Advisor · "; }
+.project-intro .advisor.role::before { content: "Role · "; }
 .project-intro p {
-  color: #4a463c;
-  font-size: 0.98rem;
+  text-align: justify;
+  hyphens: auto;
+  font-size: 0.92rem;
+  line-height: 1.85;
+  margin-top: 0.75rem;
 }
 .project-intro .placeholder-note {
-  margin-top: 1.5rem;
   font-size: 0.8rem;
   color: #b5522f;
   border: 1px dashed #e0b6a5;
-  background: #fdf3ee;
   padding: 0.75rem 1rem;
 }
 
-.project-gallery {
+.project-hero,
+.project-gallery,
+.project-gallery .elev-pair { width: 100%; }
+.project-gallery,
+.project-gallery .elev-pair {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1px;
-  background: #e2e0da;
+  flex-direction: column;
+  align-items: center;
+  gap: 3.5rem;
 }
-.project-gallery figure { flex: 1 1 480px; background: #f7f6f3; }
-.project-gallery figure.wide { flex-basis: 100%; }
-.project-gallery figure.pair-large { flex: 1 1 calc(50% - 1px); }
-.project-gallery img { width: 100%; height: 100%; object-fit: cover; }
+.project-gallery .elev-pair { display: contents; }
+.project-hero { margin-bottom: 3.5rem; }
+
+.project-hero img,
+.project-gallery img,
+.project-gallery video {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 82vh;
+  height: auto;
+  margin: 0 auto;
+  object-fit: contain;
+}
+.project-hero.hero-letterboxed { padding: 0; background: none; }
+.project-gallery figure { width: 100%; }
+figcaption {
+  margin-top: 0.9rem;
+  text-align: center;
+  font-size: 0.66rem;
+  color: var(--muted);
+}
+
+.gallery-heading {
+  width: 100%;
+  font-weight: 400;
+  font-size: 0.75rem;
+  text-align: left;
+  color: var(--ink);
+  margin: 5rem 0 2.25rem;
+}
 
 .placeholder-figure {
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: 1.5rem;
   min-height: 240px;
   border: 1px dashed #e0b6a5;
-  background: #fdf3ee;
   color: #b5522f;
   font-size: 0.85rem;
 }
 
-.project-gallery.centered-solo { justify-content: center; }
-.project-gallery.centered-solo figure { flex: 0 1 900px; }
-
-.gallery-heading {
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #a39d8f;
-  padding: 2rem 4rem 0.75rem;
-  background: #f7f6f3;
-}
-
-.project-gallery.grid-3 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
-.project-gallery.grid-3 figure {
-  aspect-ratio: 1 / 1;
-}
-.project-gallery.grid-3.natural figure {
-  aspect-ratio: auto;
-}
-.project-gallery.grid-3.natural img {
-  height: auto;
-  object-fit: initial;
-}
-
-/* ---------- explicit layout for the grid-studies drawing set ---------- */
-.gallery-drawings {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-}
-.gallery-drawings figure { aspect-ratio: auto; background: #f7f6f3; }
-.gallery-drawings img { width: 100%; height: auto; display: block; }
-/* elev1 (aspect 5186:3800) and elev2 (aspect 2600:3863) sit in their own grid, columns sized to the exact
-   inverse of each image's aspect ratio so both render at precisely the same height (ground lines align). */
-.elev-pair {
-  grid-column: 1 / 13;
-  display: grid;
-  grid-template-columns: 0.67305fr 1.36474fr;
-}
-.gallery-drawings .area-plan { grid-column: 1 / 13; }
-.gallery-drawings .area-sec1 { grid-column: 1 / 13; }
-.gallery-drawings .area-tet { grid-column: 1 / 4; }
-.gallery-drawings .area-fig1 { grid-column: 4 / 7; }
-.gallery-drawings .area-fig2 { grid-column: 7 / 10; }
-.gallery-drawings .area-fig3 { grid-column: 10 / 13; }
-.gallery-drawings .area-bent1 { grid-column: 1 / 13; }
-
-/* ---------- feature photo grid: first image spreads full-width, rest tile evenly ---------- */
-.gallery-feature {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2px;
-  background: #e2e0da;
-}
-.gallery-feature figure { aspect-ratio: 1 / 1; background: #f7f6f3; }
-.gallery-feature img { width: 100%; height: 100%; object-fit: cover; }
-.gallery-feature figure.spread { grid-column: 1 / -1; aspect-ratio: auto; }
-.gallery-feature figure.spread img { height: auto; object-fit: initial; }
-
-/* ---------- next-project teaser ---------- */
+/* plain "next project" link: the teaser image from the old layout is hidden */
 .next-project {
-  position: relative;
   display: block;
-  margin-top: 4px;
-}
-.next-project img { width: 100%; height: 70vh; object-fit: cover; filter: brightness(0.9); transition: filter 0.25s ease; }
-.next-project:hover img { filter: brightness(1); }
-.next-project .next-label {
-  position: absolute;
-  bottom: 2.5rem;
-  left: 4rem;
-  color: #fff;
-  text-shadow: 0 1px 8px rgba(0,0,0,0.35);
-}
-.next-project .next-label .eyebrow {
+  max-width: 1120px;
+  margin-top: 6rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+  text-align: left;
   font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  opacity: 0.85;
-  margin-bottom: 0.5rem;
+  color: var(--ink);
 }
-.next-project .next-label h2 {
-  font-size: 1.8rem;
-  font-weight: 500;
+.next-project img { display: none; }
+.next-project .eyebrow { color: var(--muted); font-size: 0.65rem; margin-bottom: 0.35rem; }
+.next-project h2 { font-weight: 400; font-size: 1.1rem; letter-spacing: 0.06em; transition: color 0.15s ease; }
+.next-project:hover h2 { color: var(--muted); }
+
+/* ---------- tablet ---------- */
+@media (max-width: 1100px) {
+  .project-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* ---------- mobile ---------- */
+/* ---------- phone ---------- */
 @media (max-width: 760px) {
-  .project-gallery figure.pair-large { flex-basis: 100%; }
-  .hero-title-card .hero-title-main { font-size: 1.5rem; }
   .nav {
     position: sticky;
     width: 100%;
     height: auto;
+    overflow: visible;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 1.25rem;
-    border-right: none;
-    border-bottom: 1px solid #e2e0da;
+    padding: 1.25rem 1.25rem;
+    border-bottom: 1px solid var(--rule);
   }
+  .nav-name { font-size: 1.3rem; }
   .nav-toggle {
     display: inline-flex;
-    align-items: center;
-    font-size: 0.8rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+    flex-direction: column;
+    gap: 5px;
     background: none;
-    border: 1px solid #d8d5cc;
-    padding: 0.4rem 0.8rem;
-    border-radius: 999px;
+    border: none;
+    padding: 0.5rem 0.25rem;
+    cursor: pointer;
   }
+  .nav-toggle span { display: block; width: 24px; height: 1.5px; background: var(--ink); }
   .nav-links {
     position: fixed;
-    top: 57px;
+    top: 64px;
     left: 0;
     right: 0;
-    background: #f7f6f3;
-    border-bottom: 1px solid #e2e0da;
-    padding: 1.25rem;
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    background: var(--bg);
+    border-bottom: 1px solid var(--rule);
+    padding: 1.75rem 1.25rem 2rem;
     display: none;
-    gap: 1rem;
+    gap: 1.75rem;
   }
   .nav-links.open { display: flex; }
-  main { margin-left: 0; }
-  .landing, .project-intro { padding: 2.5rem 1.5rem; }
-  .landing h1 { white-space: normal; }
-  .next-project .next-label { left: 1.5rem; bottom: 1.5rem; }
-  .project-grid { grid-template-columns: repeat(2, 1fr); }
-  /* 2-column layout: the right column is now the "edge" instead of the 3rd column */
-  .grid-tile:nth-child(3n) .grid-swatch-slide {
-    top: 0;
-    left: 100%;
-    transform: scaleX(0);
-    transform-origin: left center;
-  }
-  .grid-tile:nth-child(3n):hover .grid-swatch-slide {
-    transform: scaleX(1);
-  }
-  .grid-tile:nth-child(even) .grid-swatch-slide {
-    top: 100%;
-    left: 0;
-    transform: scaleY(0);
-    transform-origin: top center;
-  }
-  .grid-tile:nth-child(even):hover .grid-swatch-slide {
-    transform: scaleY(1);
-  }
-  .project-gallery.grid-3 { grid-template-columns: repeat(2, 1fr); }
-  .gallery-heading { padding: 1.5rem 1.5rem 0.5rem; }
-  .gallery-feature { grid-template-columns: repeat(2, 1fr); }
-
-  .gallery-drawings {
-    grid-template-columns: 1fr;
-  }
-  .gallery-drawings figure { grid-column: 1 / -1; }
-  .elev-pair { grid-column: 1 / -1; grid-template-columns: 1fr; }
+  .nav-foot { margin-top: 0; }
+  main { margin-left: 0; padding: 2rem 1.25rem 4rem; }
+  .project-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .project-intro h1 { font-size: 1.5rem; }
+  .project-gallery, .project-gallery .elev-pair { gap: 2.25rem; }
+  .gallery-heading { margin: 3rem 0 1.5rem; }
 }

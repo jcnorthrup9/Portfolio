@@ -54,7 +54,43 @@ A running log of major progress on this site.
 ## Resume link (Oct 2026)
 
 - Added `John-Northrup-Resume.pdf` (one page, real selectable text) at jcnorthrup.com/John-Northrup-Resume.pdf.
-  Its source is the Processing sketch at `D:\OneDrive\Employment\Resume\resume\resume.pde`; re-export there and
-  copy the PDF in when the resume changes.
+  Its source is the Processing sketch at `D:\OneDrive\Employment\00-JobSearch\Materials\Resume\resume\resume.pde`
+  (moved 2026-10-23); re-export there and copy the PDF in when the resume changes.
 - Landing page now shows two links under the bio: "Download portfolio ↓" (downloads) and "Resume ↗" (opens in a
   new tab). Dropped the "(PDF, 11 MB)" note from the portfolio label.
+
+## Redesign: grouped sidebar, calm pages (Oct 2026)
+
+- Replaced the continuous-scroll/cross-fade/hero-flash mechanics with ordinary pages, modeled on the calm,
+  white, captioned layout of xinyanhe.com. A short-lived category *filter* (tabs) was tried first and dropped:
+  hiding work read worse than showing it grouped.
+- Sidebar (`partials/nav.html`) groups projects under **Architecture · Drawing & Documentation · Fabrication &
+  Mechanical · Code & AI**, each project under one heading; Resume, Portfolio PDF and Email sit at the bottom.
+  The list order also drives every page's "Next" link (`main.js`), looping back to the top.
+- Landing page: short positioning line, then captioned 4:3 tiles in the same four sections. Section ids make
+  tailored links like `jcnorthrup.com/#drawing` jump straight to one group.
+- Project pages keep their original markup; the new `style.css` reflows them into one centered column (intro
+  first, each image on its own row) and every figure got a `<figcaption>` from its alt text — edit captions
+  directly in each page.
+- Type: Marcellus (Google Fonts), light classical capitals for names, labels and captions.
+- PDFs (resume, portfolio) open in the browser's viewer instead of downloading. Casa Musica and A Municipal
+  Building in Van Nuys unlisted (pages kept). Landing bio rewritten to the "draws it, builds it, automates it"
+  positioning; site resume replaced with the 2026-10-23 version.
+
+## New and rebuilt projects (Oct 2026)
+
+- Group order is now **Code & AI · Architecture · Drawing & Documentation · Fabrication & Mechanical**.
+  Interface Architecture moved to Code & AI; "Performing Arts Theater in Little Tokyo" renamed
+  "Little Tokyo Theater".
+- **memoryMachine** (M.Arch thesis, SU26, Casey Rehm) added first under Code & AI: zoning-field cover, a 36 s
+  screen-recorded tour of the app (generate → massing → drawings → diagnostics), installation photos,
+  generated plan/axo and a precedent drawing; text is the final thesis statement. The name keeps its camelCase
+  via a `keep-case` class. Sources are archived in SCI-Arc OneDrive `2026_Summer\Thesis\Archive_Final`.
+- **Design School in Mexico City** (SP25 2GB, Zeina Koreitem, with Nate Smith) added first under Architecture:
+  full-res model photos plus Nate's finished sections and plan (with his OK).
+- **LA Dance Shed**: drawings added (axon, two plans, sections, elevations) stitched from the split two-page
+  PDF spreads in the studio's `Archive_Final`; date corrected to FA24.
+- **Elf-O-Matic-3000** listed under Fabrication & Mechanical with real photos and the running loop (brings in
+  the unpublished `elf-o-matic-media` branch work). `.advisor.role` labels a job role instead of an advisor.
+- Project intros are now left-aligned with justified paragraphs; gallery headings and the Next link are
+  left-aligned; captions stay centered under their images. Videos (`<video>`) sit in galleries like images.
