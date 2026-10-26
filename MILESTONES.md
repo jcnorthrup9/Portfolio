@@ -81,7 +81,11 @@ A running log of major progress on this site.
 - Project pages keep their original markup; the new `style.css` reflows them into one centered column (intro
   first, each image on its own row) and every figure got a `<figcaption>` from its alt text — edit captions
   directly in each page.
-- Type: Marcellus (Google Fonts), light classical capitals for names, labels and captions.
+- Type: Marcellus (Google Fonts), light classical capitals for names, labels and captions. **Superseded late
+  Oct 2026** by a pairing: Marcellus kept for the name and project titles (`--display`); Inter (`--sans`, OFL,
+  same family as the resume) for body text, sidebar, labels and captions, a Swiss, drawing-sheet voice. Chosen
+  over Swiss 721, which John liked but is a commercial Bitstream font (his copy came with AutoCAD) and can't be
+  hosted. The PDF uses the same pairing (`tools/pdf/fonts`, both OFL).
 - PDFs (resume, portfolio) open in the browser's viewer instead of downloading. Casa Musica and A Municipal
   Building in Van Nuys unlisted (pages kept). Landing bio rewritten to the "draws it, builds it, automates it"
   positioning; site resume replaced with the 2026-10-23 version.

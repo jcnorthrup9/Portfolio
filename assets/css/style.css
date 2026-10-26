@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Marcellus&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Marcellus&display=swap");
 
 /* ---------- tokens ---------- */
 :root {
@@ -8,14 +8,15 @@
   --rule: #ece9e3;
   --bg: #ffffff;
   --sidebar: 260px;
-  --display: "Marcellus", "Times New Roman", serif;
+  --display: "Marcellus", "Times New Roman", serif;           /* name and project titles */
+  --sans: "Inter", "Helvetica Neue", Arial, sans-serif;     /* text, labels, captions: drawing-sheet voice */
 }
 
 /* ---------- reset ---------- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: var(--display);
+  font-family: var(--sans);
   color: var(--text);
   background: var(--bg);
   line-height: 1.6;
@@ -41,8 +42,17 @@ a { color: inherit; text-decoration: none; }
 figcaption,
 .next-project {
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
 }
+
+/* Marcellus is kept for the name and project titles only */
+.nav-name,
+.project-intro h1,
+.tile-title,
+.next-project h2 {
+  font-family: var(--display);
+}
+.tile-title { letter-spacing: 0.08em; }
 
 /* ---------- sidebar ---------- */
 .nav {
@@ -75,7 +85,8 @@ figcaption,
 }
 .nav-group-title {
   display: block;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
+  font-weight: 500;
   color: var(--ink);
   margin-bottom: 0.6rem;
 }
@@ -85,7 +96,7 @@ figcaption,
   gap: 0.35rem;
 }
 .nav-projects a {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   line-height: 1.5;
   color: var(--muted);
   transition: color 0.15s ease;
@@ -99,7 +110,7 @@ figcaption,
   margin-top: auto;
 }
 .nav-foot a {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--ink);
   transition: color 0.15s ease;
 }
@@ -118,19 +129,20 @@ main {
   margin-bottom: 3.5rem;
 }
 .landing h1 {
-  font-weight: 400;
-  font-size: 1.15rem;
+  font-weight: 500;
+  font-size: 1.1rem;
   line-height: 1.5;
   color: var(--ink);
   margin-bottom: 0.6rem;
 }
 .landing p {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
+  line-height: 1.7;
 }
 .landing-section { margin-bottom: 3.5rem; scroll-margin-top: 2rem; }
 .section-title {
-  font-weight: 400;
-  font-size: 0.8rem;
+  font-weight: 500;
+  font-size: 0.72rem;
   color: var(--ink);
   padding-bottom: 0.6rem;
   margin-bottom: 1.25rem;
@@ -194,11 +206,11 @@ main {
 }
 .project-intro { display: flex; flex-direction: column; align-items: flex-start; }
 .project-intro .eyebrow {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--muted);
 }
 .project-intro .advisor {
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   color: var(--muted);
   margin-bottom: 1.75rem;
 }
@@ -207,8 +219,8 @@ main {
 .project-intro p {
   text-align: justify;
   hyphens: auto;
-  font-size: 0.92rem;
-  line-height: 1.85;
+  font-size: 0.9rem;
+  line-height: 1.75;
   margin-top: 0.75rem;
 }
 .project-intro .placeholder-note {
@@ -247,14 +259,14 @@ main {
 figcaption {
   margin-top: 0.9rem;
   text-align: center;
-  font-size: 0.66rem;
+  font-size: 0.62rem;
   color: var(--muted);
 }
 
 .gallery-heading {
   width: 100%;
-  font-weight: 400;
-  font-size: 0.75rem;
+  font-weight: 500;
+  font-size: 0.7rem;
   text-align: left;
   color: var(--ink);
   margin: 5rem 0 2.25rem;
