@@ -20,30 +20,26 @@
       <div class="advisor role">Design &amp; Scripting</div>
       <h1>Amenity Deck Engines</h1>
       <p>
-        Two Grasshopper and Python engines that lay out an amenity deck — pools, BBQ zones, waterways
-        and hardscape — on the podium of a high-rise tower, structured into three privacy zones off the
-        building's main egress points. The second engine replaced the first, and that replacement is
-        the point.
+        A parametric workflow for a high-rise podium deck, balancing complex site
+        constraints—mechanical clearances, egress cores, and hardscape—with three distinct privacy
+        zones.
       </p>
       <p>
-        The first is a six-phase pipeline. It reads the deck boundary and its fixed obstacles —
-        mechanical plant, egress stairs, entrances — off the Rhino document, buffers them, and runs a
-        straight skeleton through what is left, seeding pools along the centrelines and expanding them
-        to a target deck-to-water ratio. A weighted Voronoi power diagram resolves the overlaps into
-        obstacle-clipped cells; a last phase turns each into a buildable basin, grid-aligned, inset by
-        a coping width, and typed automatically into a lap pool or a composite basin with a Baja shelf.
+        The initial engine deployed a six-phase pipeline: extracting Rhino boundary geometry,
+        buffering fixed obstacles, and using a straight-skeleton algorithm to seed pool locations
+        based on target deck-to-water ratios. A weighted Voronoi power diagram then resolved spatial
+        overlaps into obstacle-clipped cells to automatically generate grid-aligned basins.
       </p>
       <p>
-        It worked, and the shapes were wrong. The power diagram answers the question it was asked —
-        which pool owns which square foot — but its cells read as arbitrary. What it was genuinely good
-        at was telling me where the zones wanted to be.
+        While mathematically solved, the Voronoi cells proved spatially arbitrary. Instead of forcing
+        the output, the power diagram was repurposed as an analytical overlay, revealing exactly where
+        programmatic density naturally wanted to settle.
       </p>
       <p>
-        So I drew the three zones by hand over the engine's own placements, and wrote a second, much
-        smaller engine that builds the pools straight from those curves: an inward offset for the upper
-        pool, grid-aligned basins along the site axis for the middle, a capped soaking pool for the
-        lower. No skeleton, no power diagram, no catalogue. The algorithm became the instrument, not
-        the author.
+        Using hand-tuned zonal curves derived from this initial analysis, a streamlined secondary
+        definition handles the downstream geometric execution—building site-aligned lap basins,
+        stepped coping, and integrated soaking pools directly from spatial intent. The algorithm
+        evolved from an automated author into an executive instrument.
       </p>
       <p>
         *The two photoreal perspectives are Rhino renders finished with AI enhancement. Every drawing
@@ -52,8 +48,9 @@
     </section>
 
     <section class="project-gallery">
+      <h2 class="gallery-heading">The initial engine</h2>
       <figure class="wide">
-        <img src="../../assets/images/amenity-deck-engines/gh-canvas.jpg" alt="The full Grasshopper definition of the first engine, zoomed to fit: grouped phases for input and buffer setup, straight-skeleton seeding, multi-pool expansion, the power diagram, BBQ seeding, waterways, hardscape banding and pool typology, wired left to right"><figcaption>Definition | Six-phase pipeline, Grasshopper and Python</figcaption>
+        <img src="../../assets/images/amenity-deck-engines/gh-canvas.jpg" alt="The full Grasshopper definition of the initial engine, zoomed to fit: grouped phases for input and buffer setup, straight-skeleton seeding, multi-pool expansion, the power diagram, BBQ seeding, waterways, hardscape banding and pool typology, wired left to right"><figcaption>Definition | Six-phase pipeline, Grasshopper and Python</figcaption>
       </figure>
       <figure>
         <img src="../../assets/images/amenity-deck-engines/skeleton.jpg" alt="Phase 2 diagram: the deck boundary and its inward setback, rounded avoidance buffers around the mechanical plant, egress stairs and entrances, and the straight skeleton running through the space that is left, with its centreline seed points marked"><figcaption>Phase 2 | Straight skeleton and seed points</figcaption>
@@ -67,9 +64,12 @@
       <figure class="wide">
         <img src="../../assets/images/amenity-deck-engines/option-array.jpg" alt="Four outputs of the same definition at Pool_Count 1, 2, 3 and 4, identical view and zoom, showing the pool field subdividing progressively across the deck"><figcaption>Option array | One definition, four pool counts</figcaption>
       </figure>
+      <h2 class="gallery-heading">The secondary definition</h2>
       <figure>
-        <img src="../../assets/images/amenity-deck-engines/zone-pools.jpg" alt="The second engine: three hand-drawn zone curves with the pools built directly from them — a large pool offset inward from the upper zone, three grid-aligned pools spaced along the middle zone, and a small soaking pool in the lower zone"><figcaption>Second engine | Zone curves and the pools built from them</figcaption>
+        <img src="../../assets/images/amenity-deck-engines/zone-pools.jpg" alt="Three zonal curves with the pool geometry built directly from them — a large basin offset inward from the upper zone, three site-aligned lap basins spaced along the middle zone, and a small soaking pool in the lower zone"><figcaption>Zonal curves | Basins built from spatial intent</figcaption>
       </figure>
+
+      <h2 class="gallery-heading">The deck</h2>
       <figure>
         <img src="../../assets/images/amenity-deck-engines/hardscape-plan.jpg" alt="Hardscape plan of the amenity deck: pools, planting beds, paving, pavilion and mechanical zone drawn at eighth-inch scale"><figcaption>Drawing | Hardscape plan, the deliverable</figcaption>
       </figure>
@@ -77,7 +77,13 @@
         <img src="../../assets/images/amenity-deck-engines/aerial-pair.jpg" alt="Aerial view of the podium deck shown twice: the working Rhino model on the left, the finished render on the right"><figcaption>Rhino model and finished render | Aerial</figcaption>
       </figure>
       <figure class="wide">
-        <img src="../../assets/images/amenity-deck-engines/zone3-pair.jpg" alt="The large pool terrace shown twice: the working Rhino model on the left, the finished render on the right"><figcaption>Rhino model and finished render | Large pool</figcaption>
+        <img src="../../assets/images/amenity-deck-engines/zone2-pair.jpg" alt="The quiet residential zone shown twice: the working Rhino model on the left, the finished render on the right"><figcaption>Rhino model and finished render | Zone 2</figcaption>
+      </figure>
+      <figure class="wide">
+        <img src="../../assets/images/amenity-deck-engines/zone3-pair.jpg" alt="The large pool terrace shown twice: the working Rhino model on the left, the finished render on the right"><figcaption>Rhino model and finished render | Zone 3</figcaption>
+      </figure>
+      <figure class="wide">
+        <img src="../../assets/images/amenity-deck-engines/hero-pool-2.jpg" alt="Eye-level perspective of the pavilion terrace: a shallow pool and stepped coping in front of the glazed pavilion, with the tower rising behind"><figcaption>Render | Pavilion terrace (AI-assisted)</figcaption>
       </figure>
     </section>
     </article>
