@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Amenity Deck Engines — John Northrup</title>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body data-project="amenity-deck-engines">
+  <div id="nav-mount"></div>
+
+  <main>
+    <article class="project" data-project="amenity-deck-engines">
+    <section class="project-hero" data-spy-project="amenity-deck-engines">
+      <img src="../../assets/images/amenity-deck-engines/hero-pool.jpg" alt="Photoreal perspective of the main pool terrace on the amenity deck, loungers and planting along a curved infinity edge">
+    </section>
+
+    <section class="project-intro">
+      <div class="eyebrow">2026, Self-Directed Computational Study</div>
+      <div class="advisor role">Design &amp; Scripting</div>
+      <h1>Amenity Deck Engines</h1>
+      <p>
+        Two Grasshopper and Python engines that lay out an amenity deck — pools, BBQ zones, waterways
+        and hardscape — on the podium of a high-rise tower, structured into three privacy zones off the
+        building's main egress points. The second engine replaced the first, and that replacement is
+        the point.
+      </p>
+      <p>
+        The first is a six-phase pipeline. It reads the deck boundary and its fixed obstacles —
+        mechanical plant, egress stairs, entrances — off the Rhino document, buffers them, and runs a
+        straight skeleton through what is left, seeding pools along the centrelines and expanding them
+        to a target deck-to-water ratio. A weighted Voronoi power diagram resolves the overlaps into
+        obstacle-clipped cells; a last phase turns each into a buildable basin, grid-aligned, inset by
+        a coping width, and typed automatically into a lap pool or a composite basin with a Baja shelf.
+      </p>
+      <p>
+        It worked, and the shapes were wrong. The power diagram answers the question it was asked —
+        which pool owns which square foot — but its cells read as arbitrary. What it was genuinely good
+        at was telling me where the zones wanted to be.
+      </p>
+      <p>
+        So I drew the three zones by hand over the engine's own placements, and wrote a second, much
+        smaller engine that builds the pools straight from those curves: an inward offset for the upper
+        pool, grid-aligned basins along the site axis for the middle, a capped soaking pool for the
+        lower. No skeleton, no power diagram, no catalogue. The algorithm became the instrument, not
+        the author.
+      </p>
+      <p>
+        *The two photoreal perspectives are Rhino renders finished with AI enhancement. Every drawing
+        and diagram here is output from the definitions.
+      </p>
+    </section>
+
+    <section class="project-gallery">
+      <figure class="wide">
+        <img src="../../assets/images/amenity-deck-engines/gh-canvas.jpg" alt="The full Grasshopper definition of the first engine, zoomed to fit: grouped phases for input and buffer setup, straight-skeleton seeding, multi-pool expansion, the power diagram, BBQ seeding, waterways, hardscape banding and pool typology, wired left to right"><figcaption>Definition | Six-phase pipeline, Grasshopper and Python</figcaption>
+      </figure>
+      <figure>
+        <img src="../../assets/images/amenity-deck-engines/skeleton.jpg" alt="Phase 2 diagram: the deck boundary and its inward setback, rounded avoidance buffers around the mechanical plant, egress stairs and entrances, and the straight skeleton running through the space that is left, with its centreline seed points marked"><figcaption>Phase 2 | Straight skeleton and seed points</figcaption>
+      </figure>
+      <figure>
+        <img src="../../assets/images/amenity-deck-engines/power-diagram.jpg" alt="Phase 3b diagram: the seeded pools resolved into interlocking weighted Voronoi cells filling the deck, each clipped around the fixed obstacles"><figcaption>Phase 3b | Weighted Voronoi power diagram</figcaption>
+      </figure>
+      <figure>
+        <img src="../../assets/images/amenity-deck-engines/phase6-basins.jpg" alt="Phase 6 diagram at the same framing as the power diagram: each irregular cell converted into a grid-aligned basin inset by a coping width and clipped back to its own cell, with Baja shelves nested inside the larger basins"><figcaption>Phase 6 | Cells converted to buildable basins</figcaption>
+      </figure>
+      <figure class="wide">
+        <img src="../../assets/images/amenity-deck-engines/option-array.jpg" alt="Four outputs of the same definition at Pool_Count 1, 2, 3 and 4, identical view and zoom, showing the pool field subdividing progressively across the deck"><figcaption>Option array | One definition, four pool counts</figcaption>
+      </figure>
+      <figure>
+        <img src="../../assets/images/amenity-deck-engines/zone-pools.jpg" alt="The second engine: three hand-drawn zone curves with the pools built directly from them — a large pool offset inward from the upper zone, three grid-aligned pools spaced along the middle zone, and a small soaking pool in the lower zone"><figcaption>Second engine | Zone curves and the pools built from them</figcaption>
+      </figure>
+      <figure>
+        <img src="../../assets/images/amenity-deck-engines/hardscape-plan.jpg" alt="Hardscape plan of the amenity deck: pools, planting beds, paving, pavilion and mechanical zone drawn at eighth-inch scale"><figcaption>Drawing | Hardscape plan, the deliverable</figcaption>
+      </figure>
+      <figure class="wide">
+        <img src="../../assets/images/amenity-deck-engines/aerial-pair.jpg" alt="Aerial view of the podium deck shown twice: the working Rhino model on the left, the finished render on the right"><figcaption>Rhino model and finished render | Aerial</figcaption>
+      </figure>
+      <figure class="wide">
+        <img src="../../assets/images/amenity-deck-engines/zone3-pair.jpg" alt="The large pool terrace shown twice: the working Rhino model on the left, the finished render on the right"><figcaption>Rhino model and finished render | Large pool</figcaption>
+      </figure>
+    </section>
+    </article>
+
+    <a class="next-project" href="../prototype/index.html" data-spy-project="prototype">
+      <img src="../../assets/images/prototype/cover.jpg" alt="Preview of the next project — Prototype">
+      <div class="next-label">
+        <div class="eyebrow">Next</div>
+        <h2>Prototype</h2>
+      </div>
+    </a>
+  </main>
+
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>
