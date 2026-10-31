@@ -107,3 +107,45 @@ A running log of major progress on this site.
   the unpublished `elf-o-matic-media` branch work). `.advisor.role` labels a job role instead of an advisor.
 - Project intros are now left-aligned with justified paragraphs; gallery headings and the Next link are
   left-aligned; captions stay centered under their images. Videos (`<video>`) sit in galleries like images.
+
+## Amenity Deck Engines: zone diagram and model view (Oct 2026)
+
+- Added the **three privacy zones** diagram under "The secondary definition", ahead of the zonal curves, so the
+  section reads intent then execution. Taken from the design-narrative page of the submission PDF — the
+  *embedded* image rather than the rasterised page, because the slide cropped its left edge off. Its real
+  detail ceiling is 777×612 px, so it is upscaled; re-export from the original Illustrator/Affinity file if a
+  crisper version is ever needed. Checked clean of firm/project identifiers before publishing.
+- Added **`pavilion-model.jpg`**, the raw Rhino viewport the AI-enhanced `hero-pool-2.jpg` was rendered from,
+  placed directly above it so the pair reads model → render. Cropped to drop the clipped foreground band and
+  its red construction curves.
+- **Dropped the "Zonal curves" figure.** Its geometry came from reconstructed `ProgramZones` curves, not the
+  originals, so it did not match the design it illustrated. The zone diagram now carries the spatial intent.
+
+## Design School in Mexico City: John's own plans (Oct 2026)
+
+John's plan drawings replaced Nate's single dressed export (`plan-ground.jpg`, kept in the repo but no longer
+referenced). Nate's two sections stay. Source is `250328_Plans_Sections_24x36.pdf` pp. 1–2 in the studio
+archive — `Plan1.pdf`/`Plan2.pdf` there are bare linework with no title block, legend or scale bar, so they are
+not usable alone. **Working files and a full README are archived at**
+`R:\SCI-Arc_Archive\2025_2GB_Spring\01_Studio\EXERCISE_5_DRAWINGS\InDesign\Portfolio_Rework_2026-10-31\` —
+go there first, the PDFs are still vector and editable.
+
+- **Title block** — filled the template's `FIRST LAST` and `DESCRIPTION OF IMAGE` placeholders. Note the sheets
+  now read `NATE SMITH` by John's choice, while Nate's own drawings are signed `NATHANIEL SMITH`.
+- **Legend** — replaced John's older taxonomy with Nate's renumbering. It turned out to be the same template
+  with one extra column, so it drops onto the same x positions.
+- **Callouts** — none existed. Ground floor mirrors Nate's; cores read **6** per the legend, where his sheet
+  still says `8` (his own leftover). **The second-floor callouts are inferred and unverified**, and `3.4`
+  (dressing rooms) / `3.6` (lobby) have no matching rooms in John's drawings.
+- **Ink weight** — the drawing set `0 0 0 RG` at the head of six content streams, so every wall rendered pure
+  black, far heavier than Nate's sections. Now **0.48 grey**, matched to the darkest decile of his drawings.
+  Line *width* is not a useful lever here: at 2500 px the strokes are already sub-pixel.
+- **Scale** — sheet 2 was drawn **1.31×** larger than sheet 1 (column grid 64.1 px against 49.0 px). Its
+  drawing content is wrapped in a scale transform so both agree; the title block is left at template size, and
+  the scale bar and north arrow are composited in from sheet 1.
+- **IMSS poché** — transferred from Nate's drawing by image registration, then its top edge straightened to the
+  wall line and the wall-enclosed corner pockets filled. A morphological closing was tried for those pockets
+  and rejected: it rounds the boundary outward into the plaza. Sheet 2's poché **assumes the existing building
+  keeps its ground-floor footprint** one level up.
+- **Final model photo** (`cover.jpg`, also the landing tile and Prototype's Next preview) was lifted with a
+  1.35 gamma and re-saturated ×1.45 in one pass, matching the truss close-up beside it.
