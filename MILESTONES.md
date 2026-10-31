@@ -108,7 +108,7 @@ A running log of major progress on this site.
 - Project intros are now left-aligned with justified paragraphs; gallery headings and the Next link are
   left-aligned; captions stay centered under their images. Videos (`<video>`) sit in galleries like images.
 
-## Amenity Deck Engines: zone diagram and model view (Oct 2026)
+## Amenity Deck Engine: zone diagram and model view (Oct 2026)
 
 - Added the **three privacy zones** diagram under "The secondary definition", ahead of the zonal curves, so the
   section reads intent then execution. Taken from the design-narrative page of the submission PDF — the
