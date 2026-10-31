@@ -95,7 +95,7 @@ A running log of major progress on this site.
 - Group order is now **Code & AI · Architecture · Drawing & Documentation · Fabrication & Mechanical**.
   Interface Architecture moved to Code & AI; "Performing Arts Theater in Little Tokyo" renamed
   "Little Tokyo Theater".
-- **memoryMachine** (M.Arch thesis, SU26, Casey Rehm) added first under Code & AI: zoning-field cover, a 36 s
+- **memoryMACHINE** (M.Arch thesis, SU26, Casey Rehm) added first under Code & AI: zoning-field cover, a 36 s
   screen-recorded tour of the app (generate → massing → drawings → diagnostics), installation photos,
   generated plan/axo and a precedent drawing; text is the final thesis statement. The name keeps its camelCase
   via a `keep-case` class. Sources are archived in SCI-Arc OneDrive `2026_Summer\Thesis\Archive_Final`.
