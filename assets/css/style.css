@@ -257,6 +257,10 @@ main {
 }
 .project-hero.hero-letterboxed { padding: 0; background: none; }
 .project-gallery figure { width: 100%; }
+/* a row of smaller figures (square product shots) side by side instead of stacked */
+.project-gallery .figure-row { width: 100%; display: flex; gap: 2.5rem; align-items: flex-start; }
+.project-gallery .figure-row figure { flex: 1 1 0; min-width: 0; }
+.project-gallery .figure-row img { width: 100%; max-height: none; }
 figcaption {
   margin-top: 0.9rem;
   text-align: center;
@@ -347,5 +351,6 @@ figcaption {
   .project-grid { grid-template-columns: 1fr; gap: 2rem; }
   .project-intro h1 { font-size: 1.5rem; }
   .project-gallery, .project-gallery .elev-pair { gap: 2.25rem; }
+  .project-gallery .figure-row { flex-direction: column; gap: 2.25rem; }
   .gallery-heading { margin: 3rem 0 1.5rem; }
 }
