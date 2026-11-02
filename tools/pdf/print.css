@@ -1,6 +1,5 @@
-/* Print styles for the PDF portfolio. Mirrors the site: white ground, Marcellus for the name and project
-   titles, Inter for text, labels and captions, spaced capitals for labels. */
-@font-face { font-family: "Marcellus"; src: url("fonts/Marcellus-Regular.ttf") format("truetype"); font-display: block; }
+/* Print styles for the PDF portfolio. Mirrors the site: white ground, Inter throughout — the name and
+   project titles sit a weight heavier, spaced capitals for labels. */
 @font-face { font-family: "Inter"; src: url("fonts/Inter-400.ttf") format("truetype"); font-weight: 400; font-display: block; }
 @font-face { font-family: "Inter"; src: url("fonts/Inter-500.ttf") format("truetype"); font-weight: 500; font-display: block; }
 @page { size: {{PAGE_W}} {{PAGE_H}}; margin: 0; }
@@ -21,8 +20,8 @@ img { display: block; }
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
-/* Marcellus only for the name and project titles */
-.cover h1, .opener-text h2, .contents .t { font-family: "Marcellus", "Times New Roman", serif; }
+/* The display role: name and project titles. Same family as the body, one weight heavier. */
+.cover h1, .opener-text h2, .contents .t { font-family: "Inter", "Helvetica Neue", Arial, sans-serif; font-weight: 500; }
 .contents .t, .opener-text h2 { letter-spacing: 0.08em; }
 .contents li.group, .gallery-heading { font-weight: 500; }
 .keep-case { text-transform: none !important; letter-spacing: 0.04em; }
@@ -52,7 +51,7 @@ img { display: block; }
 /* ---------- cover ---------- */
 .cover { display: flex; gap: 0.6in; padding: 0.75in; }
 .cover-text { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
-.cover h1 { font-weight: 400; font-size: 34pt; line-height: 1.1; letter-spacing: 0.06em; text-transform: uppercase; color: #2a2724; margin: 0.14in 0 0.26in; }
+.cover h1 { font-weight: 500; font-size: 34pt; line-height: 1.1; letter-spacing: 0.06em; text-transform: uppercase; color: #2a2724; margin: 0.14in 0 0.26in; }
 .cover .tagline { font-size: 12.5pt; line-height: 1.4; color: #2a2724; margin-bottom: 0.14in; }
 .cover .bio { font-size: 9pt; line-height: 1.6; text-align: justify; hyphens: auto; }
 .cover .contact { display: flex; justify-content: space-between; margin-top: 0.35in; font-size: 7.5pt; color: #2a2724; border-top: 1px solid #ece9e3; padding-top: 0.12in; }
@@ -92,7 +91,7 @@ img { display: block; }
 .opener.top .opener-text.cols { column-count: 2; column-gap: 0.45in; }
 .opener.top .opener-text.cols > :not(p) { column-span: all; }
 .opener-text .num { font-size: 8pt; color: #a49d91; margin-bottom: 0.06in; }
-.opener-text h2 { font-weight: 400; font-size: 19pt; line-height: 1.2; color: #2a2724; margin-bottom: 0.08in; }
+.opener-text h2 { font-weight: 500; font-size: 19pt; line-height: 1.2; color: #2a2724; margin-bottom: 0.08in; }
 .opener-text .advisor { font-size: 7pt; color: #a49d91; margin-top: 0.03in; }
 .opener-text .advisor + p, .opener-text .eyebrow + p { margin-top: 0.2in; }
 .opener-text p { font-size: 8.6pt; line-height: 1.65; text-align: justify; hyphens: auto; margin-bottom: 0.1in; }

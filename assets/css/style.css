@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Marcellus&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap");
 
 /* ---------- tokens ---------- */
 :root {
@@ -8,7 +8,7 @@
   --rule: #ece9e3;
   --bg: #ffffff;
   --sidebar: 260px;
-  --display: "Marcellus", "Times New Roman", serif;           /* name and project titles */
+  --display: "Inter", "Helvetica Neue", Arial, sans-serif;   /* name and project titles, set a weight heavier */
   --sans: "Inter", "Helvetica Neue", Arial, sans-serif;     /* text, labels, captions: drawing-sheet voice */
 }
 
@@ -45,12 +45,13 @@ figcaption,
   letter-spacing: 0.06em;
 }
 
-/* Marcellus is kept for the name and project titles only */
+/* The display role: name and project titles. Same family as the body, one weight heavier. */
 .nav-name,
 .project-intro h1,
 .tile-title,
 .next-project h2 {
   font-family: var(--display);
+  font-weight: 500;
 }
 .tile-title { letter-spacing: 0.08em; }
 
@@ -198,7 +199,7 @@ main {
 }
 .project-intro h1 {
   order: -1;
-  font-weight: 400;
+  font-weight: 500;
   font-size: 2rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;

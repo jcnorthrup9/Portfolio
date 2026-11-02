@@ -81,11 +81,20 @@ A running log of major progress on this site.
 - Project pages keep their original markup; the new `style.css` reflows them into one centered column (intro
   first, each image on its own row) and every figure got a `<figcaption>` from its alt text — edit captions
   directly in each page.
-- Type: Marcellus (Google Fonts), light classical capitals for names, labels and captions. **Superseded late
-  Oct 2026** by a pairing: Marcellus kept for the name and project titles (`--display`); Inter (`--sans`, OFL,
-  same family as the resume) for body text, sidebar, labels and captions, a Swiss, drawing-sheet voice. Chosen
-  over Swiss 721, which John liked but is a commercial Bitstream font (his copy came with AutoCAD) and can't be
-  hosted. The PDF uses the same pairing (`tools/pdf/fonts`, both OFL).
+- Type: Marcellus (Google Fonts) originally, then a Marcellus/Inter pairing from late Oct 2026.
+  **Superseded 2026-11-01: Marcellus is gone and Inter is the only family**, across the site, the PDF
+  portfolios and the resume. John noticed his own name was set in two unrelated typefaces — Marcellus
+  34pt on the portfolio cover, Inter 40pt on the resume — and chose to unify on Inter. This finally
+  satisfies the **Swiss 721** preference that was rejected earlier for being a commercial Bitstream font
+  (his copy came with AutoCAD) that can't be hosted: Inter is the OFL answer to the same taste.
+  The display role is kept as a `--display` token (`style.css`) and the `.cover h1, .opener-text h2,
+  .contents .t` rule (`print.css`), both now pointing at Inter and **separated from body text by weight
+  500 rather than by family**. Uppercase and the 0.06em tracking are unchanged — they are what carry the
+  drawing-sheet voice now.
+  ⚠ The earlier note that Inter was the "same family as the resume" was imprecise: the resume uses the
+  **`Inter 18pt`** optical cut, the site and PDF the default **`Inter`**. Measured difference is ~1%
+  (identical cap height, x-height 1.3% apart), so the resume is deliberately left alone — its name was
+  already Inter, which is why this change needed no resume rebuild.
 - PDFs (resume, portfolio) open in the browser's viewer instead of downloading. Casa Musica and A Municipal
   Building in Van Nuys unlisted (pages kept). Landing bio rewritten to the "draws it, builds it, automates it"
   positioning; site resume replaced with the 2026-10-23 version.
